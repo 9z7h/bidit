@@ -4,18 +4,27 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>주식가이드 · 5분이면 충분해요</title>
+<script>
+  // FOUC 방지: 스타일/DOM 로드 전 테마 즉시 적용
+  (function() {
+    try {
+      var t = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', t);
+    } catch (e) {}
+  })();
+</script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap');
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  :root {
+  :root, [data-theme="dark"] {
     --bg: #0d0f14;
     --surface: #161920;
     --surface2: #1e2230;
     --border: rgba(255,255,255,0.07);
-    --border-focus: rgba(99,210,140,0.5);
-    --green: #63d28c;
-    --green-dim: rgba(99,210,140,0.12);
+    --border-focus: rgba(94,215,255,0.5);
+    --green: #5ED7FF;
+    --green-dim: rgba(94,215,255,0.12);
     --red: #f27373;
     --red-dim: rgba(242,115,115,0.12);
     --amber: #f2c063;
@@ -23,6 +32,47 @@
     --text: #e8eaf0;
     --text-secondary: #7a8099;
     --label: #a0a8c0;
+    --btn-text: var(--btn-text);
+    --card-shadow: 0 24px 80px rgba(0,0,0,0.5);
+  }
+
+  [data-theme="light"] {
+    --bg: #f4f7fb;
+    --surface: #ffffff;
+    --surface2: #eef2f8;
+    --border: rgba(15,23,42,0.08);
+    --border-focus: rgba(14,165,233,0.45);
+    --green: #0AA1D3;
+    --green-dim: rgba(14,165,233,0.1);
+    --red: #dc2626;
+    --red-dim: rgba(220,38,38,0.08);
+    --amber: #d97706;
+    --amber-dim: rgba(217,119,6,0.08);
+    --text: #0f172a;
+    --text-secondary: #64748b;
+    --label: #475569;
+    --btn-text: #ffffff;
+    --card-shadow: 0 8px 30px rgba(15,23,42,0.08);
+  }
+
+  /* Light mode: clickable 카드는 흰 배경 + 살짝 진한 보더 */
+  [data-theme="light"] .rec-card,
+  [data-theme="light"] .choice,
+  [data-theme="light"] .result {
+    background: #ffffff;
+    border-color: rgba(15,23,42,0.1);
+    box-shadow: 0 1px 2px rgba(15,23,42,0.03);
+  }
+  [data-theme="light"] .rec-card:hover,
+  [data-theme="light"] .choice:hover {
+    background: #ffffff;
+    border-color: var(--border-focus);
+    box-shadow: 0 2px 6px rgba(14,165,233,0.08);
+  }
+  /* Result.fail (오류)는 라이트 모드에서도 미세한 빨간 톤 유지 */
+  [data-theme="light"] .result.fail {
+    background: var(--red-dim);
+    border-color: rgba(220,38,38,0.18);
   }
 
   body {
@@ -43,7 +93,7 @@
     border: 1px solid var(--border);
     border-radius: 20px;
     padding: 32px 28px;
-    box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+    box-shadow: var(--card-shadow);
   }
 
   /* Top bar */
@@ -64,6 +114,10 @@
     transition: background 0.3s;
   }
   .dot.active { background: var(--green); }
+  .topbar-actions {
+    display: flex;
+    gap: 6px;
+  }
   .icon-btn {
     background: transparent;
     border: 1px solid var(--border);
@@ -75,7 +129,10 @@
     display: flex; align-items: center; justify-content: center;
     transition: all 0.2s;
   }
-  .icon-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.15); }
+  .icon-btn:hover {
+    color: var(--text);
+    border-color: var(--border-focus);
+  }
 
   /* Headers */
   .badge {
@@ -86,7 +143,7 @@
     letter-spacing: 0.1em;
     color: var(--green);
     background: var(--green-dim);
-    border: 1px solid rgba(99,210,140,0.2);
+    border: 1px solid rgba(94,215,255,0.2);
     border-radius: 20px;
     padding: 4px 12px;
     margin-bottom: 14px;
@@ -136,7 +193,7 @@
   }
   .choice:hover {
     border-color: var(--border-focus);
-    background: rgba(99,210,140,0.04);
+    background: rgba(94,215,255,0.04);
   }
   .choice strong { font-weight: 700; }
   .choice em {
@@ -154,6 +211,17 @@
     color: var(--label);
     letter-spacing: 0.03em;
   }
+  .label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .hint {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-weight: 400;
+  }
   input {
     background: var(--surface2);
     border: 1px solid var(--border);
@@ -169,7 +237,7 @@
   input::placeholder { color: var(--text-secondary); font-size: 14px; }
   input:focus {
     border-color: var(--border-focus);
-    box-shadow: 0 0 0 3px rgba(99,210,140,0.08);
+    box-shadow: 0 0 0 3px rgba(94,215,255,0.08);
   }
   input.error {
     border-color: rgba(242,115,115,0.5);
@@ -187,7 +255,7 @@
     width: 100%;
     padding: 15px;
     background: var(--green);
-    color: #0a1a10;
+    color: var(--btn-text);
     border: none;
     border-radius: 12px;
     font-size: 15px;
@@ -219,12 +287,107 @@
   }
   .spinner {
     width: 16px; height: 16px;
-    border: 2px solid rgba(10,26,16,0.3);
-    border-top-color: #0a1a10;
+    border: 2px solid rgba(0,0,0,0.2);
+    border-top-color: var(--btn-text);
     border-radius: 50%;
     animation: spin 0.7s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Fancy loader (circle + letters) */
+  .fancy-loader-wrap {
+    margin: 32px auto 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .fancy-loader {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 75px;
+    height: 75px;
+    user-select: none;
+  }
+  .fancy-loader-text {
+    display: flex;
+    gap: 0.5px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--text);
+    font-size: 8px;
+    z-index: 1;
+  }
+  .fancy-loader-text span {
+    display: inline-block;
+    opacity: 0.4;
+    animation: loaderLetter 3s infinite;
+  }
+  .fancy-loader-circle {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    animation: loaderCircle 5s linear infinite;
+  }
+  .fancy-loader-caption {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    letter-spacing: 0.02em;
+  }
+  .dot-loader {
+    display: inline-block;
+    margin-left: 2px;
+  }
+  .dot-loader span {
+    display: inline-block;
+    opacity: 0.2;
+    animation: dotBlink 1.4s infinite;
+  }
+  .dot-loader span:nth-child(1) { animation-delay: 0s; }
+  .dot-loader span:nth-child(2) { animation-delay: 0.2s; }
+  .dot-loader span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes dotBlink {
+    0%, 60%, 100% { opacity: 0.2; }
+    30% { opacity: 1; }
+  }
+  @keyframes loaderCircle {
+    0% {
+      transform: rotate(90deg);
+      box-shadow:
+        0 3px 6px 0 rgba(94,215,255,0.55) inset,
+        0 6px 9px 0 rgba(40,160,200,0.4) inset,
+        0 18px 18px 0 rgba(20,60,90,0.5) inset,
+        0 0 1.5px 0.6px rgba(94,215,255,0.3),
+        0 0 3px 0.9px rgba(94,215,255,0.18);
+    }
+    50% {
+      transform: rotate(270deg);
+      box-shadow:
+        0 3px 6px 0 rgba(140,235,255,0.6) inset,
+        0 6px 3px 0 rgba(50,170,210,0.4) inset,
+        0 12px 18px 0 rgba(94,215,255,0.5) inset,
+        0 0 1.5px 0.6px rgba(94,215,255,0.3),
+        0 0 3px 0.9px rgba(94,215,255,0.18);
+    }
+    100% {
+      transform: rotate(450deg);
+      box-shadow:
+        0 3px 6px 0 rgba(94,215,255,0.55) inset,
+        0 6px 9px 0 rgba(40,160,200,0.4) inset,
+        0 18px 18px 0 rgba(20,60,90,0.5) inset,
+        0 0 1.5px 0.6px rgba(94,215,255,0.3),
+        0 0 3px 0.9px rgba(94,215,255,0.18);
+    }
+  }
+  @keyframes loaderLetter {
+    0%, 100% { opacity: 0.4; transform: translateY(0); }
+    20% { opacity: 1; transform: scale(1.15); }
+    40% { opacity: 0.7; transform: translateY(0); }
+  }
 
   /* Recommendation cards */
   .rec-list {
@@ -250,7 +413,7 @@
   }
   .rec-card:hover {
     border-color: var(--border-focus);
-    background: rgba(99,210,140,0.04);
+    background: rgba(94,215,255,0.04);
     transform: translateY(-1px);
   }
   .rec-card:active { transform: translateY(0); }
@@ -326,7 +489,7 @@
     border-radius: 14px;
     padding: 22px 20px;
     background: var(--green-dim);
-    border: 1px solid rgba(99,210,140,0.2);
+    border: 1px solid rgba(94,215,255,0.2);
   }
   .result.fail {
     background: var(--red-dim);
@@ -340,6 +503,37 @@
     color: var(--green);
   }
   .result.fail .result-label { color: var(--red); }
+
+  .result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .result-header .result-label { margin-bottom: 0; }
+  .copy-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    padding: 5px 11px;
+    border-radius: 7px;
+    font-size: 11px;
+    font-family: inherit;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .copy-btn:hover {
+    color: var(--green);
+    border-color: rgba(94,215,255,0.4);
+    background: rgba(94,215,255,0.06);
+  }
+  .copy-btn.copied {
+    color: var(--green);
+    border-color: rgba(94,215,255,0.5);
+    background: rgba(94,215,255,0.12);
+  }
   .feedback-lines { display: flex; flex-direction: column; gap: 12px; }
   .feedback-line {
     display: flex;
@@ -349,7 +543,7 @@
   .line-num {
     flex-shrink: 0;
     width: 22px; height: 22px;
-    background: rgba(99,210,140,0.2);
+    background: rgba(94,215,255,0.2);
     border-radius: 50%;
     font-size: 11px;
     font-weight: 700;
@@ -468,7 +662,10 @@
       <div class="dot" id="dot-3"></div>
       <div class="dot" id="dot-4"></div>
     </div>
-    <button class="icon-btn" onclick="openSettings()" title="API 키 설정">⚙</button>
+    <div class="topbar-actions">
+      <button class="icon-btn" id="theme-toggle" onclick="toggleTheme()" title="테마 변경">☾</button>
+      <button class="icon-btn" onclick="openSettings()" title="API 키 설정">⚙</button>
+    </div>
   </div>
 
   <!-- Screen 1: Onboarding -->
@@ -485,9 +682,14 @@
     <h1>당신께 맞는<br><span>이 종목</span>이에요</h1>
     <p class="subtitle">성향 기반으로 골랐어요. 부담 없는 가상 매수예요.</p>
 
-    <div id="rec-loading" style="margin-top:24px; text-align:center; color:var(--text-secondary); font-size:14px;">
-      <div class="spinner" style="border-color:rgba(99,210,140,0.2); border-top-color:var(--green); margin:0 auto 12px;"></div>
-      추천 종목을 고르는 중...
+    <div id="rec-loading" class="fancy-loader-wrap">
+      <div class="fancy-loader">
+        <div class="fancy-loader-circle"></div>
+        <div class="fancy-loader-text">
+          <span style="animation-delay:0s">G</span><span style="animation-delay:0.1s">e</span><span style="animation-delay:0.2s">n</span><span style="animation-delay:0.3s">e</span><span style="animation-delay:0.4s">r</span><span style="animation-delay:0.5s">a</span><span style="animation-delay:0.6s">t</span><span style="animation-delay:0.7s">i</span><span style="animation-delay:0.8s">n</span><span style="animation-delay:0.9s">g</span>
+        </div>
+      </div>
+      <div class="fancy-loader-caption">추천 종목을 고르는 중<span class="dot-loader"><span>.</span><span>.</span><span>.</span></span></div>
     </div>
 
     <div id="rec-content" style="display:none;">
@@ -516,13 +718,16 @@
 
     <div class="form">
       <div class="field">
-        <label id="price-label">매수 가격 (원)</label>
-        <input id="price" type="text" inputmode="decimal" placeholder="예: 71000">
+        <div class="label-row">
+          <label id="price-label">매수 가격 (원)</label>
+          <span class="hint" id="price-hint"></span>
+        </div>
+        <input id="price" type="text" inputmode="decimal" placeholder="예: 71000" maxlength="8">
         <span class="field-error" id="err-price"></span>
       </div>
       <div class="field">
         <label>매수 수량 (주)</label>
-        <input id="qty" type="text" inputmode="numeric" placeholder="예: 10">
+        <input id="qty" type="text" inputmode="numeric" placeholder="예: 10" maxlength="4">
         <span class="field-error" id="err-qty"></span>
       </div>
       <div class="summary" id="buy-summary" style="display:none;">
@@ -538,9 +743,14 @@
     <h1 id="fb-title"><span>—</span> 매수 완료</h1>
     <p class="subtitle" id="fb-summary">—</p>
 
-    <div id="fb-loading" style="margin-top:24px; text-align:center; color:var(--text-secondary); font-size:14px;">
-      <div class="spinner" style="border-color:rgba(99,210,140,0.2); border-top-color:var(--green); margin:0 auto 12px;"></div>
-      피드백 분석 중...
+    <div id="fb-loading" class="fancy-loader-wrap">
+      <div class="fancy-loader">
+        <div class="fancy-loader-circle"></div>
+        <div class="fancy-loader-text">
+          <span style="animation-delay:0s">A</span><span style="animation-delay:0.1s">n</span><span style="animation-delay:0.2s">a</span><span style="animation-delay:0.3s">l</span><span style="animation-delay:0.4s">y</span><span style="animation-delay:0.5s">z</span><span style="animation-delay:0.6s">i</span><span style="animation-delay:0.7s">n</span><span style="animation-delay:0.8s">g</span>
+        </div>
+      </div>
+      <div class="fancy-loader-caption">피드백 분석 중<span class="dot-loader"><span>.</span><span>.</span><span>.</span></span></div>
     </div>
 
     <div id="fb-result"></div>
@@ -590,30 +800,48 @@ const FEEDBACK_SYSTEM = `[01 ROLE]
 - 3줄 외 어떤 텍스트도 출력 금지
 
 [04 RULES]
-- 모르는 종목은 "정보를 찾기 어려운 종목이에요" 출력
 - 추측 금지. 확인된 정보만 사용
 - 주린이가 이해할 수 있는 쉬운 말로
 - 줄 바꿈 없이 3줄만 출력
 
 [05 EXAMPLES]
-입력 — 종목명: 삼성전자 / 매수 가격: 71000원 / 매수 수량: 10주
+입력 — 종목명: 삼성전자 / 매수 가격: 270,000원 / 매수 수량: 10주
 출력
-- 현재 삼성전자는 반도체 업황 회복 기대로 횡보 중
-- 단기 반등 후 재하락 가능성 있어 추가 매수 주의
-- 지금은 보유 유지, 65000원 아래로 내려오면 재검토
+- 현재 종목 상태 요약: 현재 삼성전자는 반도체 업황 회복 기대로 횡보 중
+- 리스크 포인트: 단기 반등 후 재하락 가능성 있어 추가 매수 주의
+- 추천 액션: 지금은 보유 유지, 250,000원 아래로 내려오면 재검토
 
-입력 — 종목명: 카카오 / 매수 가격: 42000원 / 매수 수량: 5주
+입력 — 종목명: 카카오 / 매수 가격: 42,000원 / 매수 수량: 5주
 출력
-- 카카오는 규제 이슈로 주가 회복이 더딘 상황
-- 플랫폼 규제 리스크 여전히 남아 있어 변동성 주의
-- 추가 매수보다 현 보유 유지 후 실적 발표 후 재판단
+- 현재 종목 상태 요약: 카카오는 규제 이슈로 주가 회복이 더딘 상황
+- 리스크 포인트: 플랫폼 규제 리스크 여전히 남아 있어 변동성 주의
+- 추천 액션: 추가 매수보다 현 보유 유지 후 실적 발표 후 재판단
+
+입력 — 종목명: 애플 / 매수 가격: $250 / 매수 수량: 3주
+출력
+- 현재 종목 상태 요약: 애플은 AI 기능 확대와 서비스 매출 호조로 견조
+- 리스크 포인트: 고평가 부담과 원달러 환율 변동성 함께 점검 필요
+- 추천 액션: 보유 유지, $230 아래 하락 시 분할 매수 검토
+
+입력 — 종목명: 엔비디아 / 매수 가격: $210 / 매수 수량: 2주
+출력
+- 현재 종목 상태 요약: 엔비디아는 AI 칩 수요 강세로 실적 모멘텀 지속
+- 리스크 포인트: 변동성이 크고 고평가 부담 있어 단기 조정 가능성
+- 추천 액션: 분할 매수 권장, 급락 구간에서 추가 진입 고려
+
+입력 — 종목명: 코카콜라 / 매수 가격: $78 / 매수 수량: 5주
+출력
+- 현재 종목 상태 요약: 코카콜라는 안정적 배당과 꾸준한 실적의 대표주
+- 리스크 포인트: 환율 약세 시 원화 환산 수익률이 줄어들 수 있음
+- 추천 액션: 장기 보유 적합, 분기 배당락 전후 매수 시점 검토
 
 [06 EDGE CASES]
-- 종목명 없음 → "종목명을 입력해주세요"
 - 빈 입력 → 버튼 비활성화
 - 가격·수량이 0이거나 문자 → "올바른 숫자를 입력해주세요"
-- 상장 폐지·존재하지 않는 종목 → "정보를 찾기 어려운 종목이에요"
-- 응답 형식 이상(3줄 미만·초과) → 반드시 3줄로만 재구성해서 출력`;
+- 응답 형식 이상(3줄 미만·초과) → 반드시 3줄로만 재구성해서 출력
+- 네트워크·타임아웃 오류 → 클라이언트에서 처리 (시스템 프롬프트 범위 밖)
+- 입력값이 비현실적으로 클 때(매수 가격이 실제 시장가 대비 10배 이상이거나, 총 매수 금액이 수십억 원/달러 이상으로 명백히 정상 범위를 벗어난 경우)
+  → 3줄 형식 사용 금지. 다음 단일 문장만 출력 (대시 없이): 비정상적인 수치로 투자 분석이 불가능합니다. 다시 시도해주세요`;
 
 const RECOMMEND_SYSTEM = `[01 ROLE]
 너는 주린이를 위한 종목 추천 가이드야.
@@ -933,6 +1161,14 @@ function goToBuy(idx) {
   document.getElementById('qty').value = '';
   document.getElementById('price-label').textContent =
     recommendation.currency === 'USD' ? '매수 가격 ($)' : '매수 가격 (원)';
+
+  const hint = document.getElementById('price-hint');
+  if (recommendation.price != null) {
+    hint.textContent = `현재가 ${formatPrice(recommendation.price, recommendation.currency)}`;
+  } else {
+    hint.textContent = '';
+  }
+
   setErr('price', '');
   setErr('qty', '');
   updateBuySummary();
@@ -946,14 +1182,28 @@ function updateBuySummary() {
   const qty = Number(qtyRaw);
   const summary = document.getElementById('buy-summary');
   const cur = recommendation?.currency || 'KRW';
+  const cap = getPriceCap();
+
   if (price > 0 && qty > 0) {
     document.getElementById('buy-total').textContent = formatPrice(price * qty, cur);
     summary.style.display = 'block';
   } else {
     summary.style.display = 'none';
   }
-  // 빈 입력일 때 버튼 비활성화 (시스템 프롬프트 [06 EDGE CASES])
-  document.getElementById('buy-btn').disabled = !priceRaw || !qtyRaw;
+
+  // 현재가 초과 시 즉시 에러 표시
+  if (priceRaw && price > cap) {
+    setErr('price', `현재가 ${formatPrice(cap, cur)} 이하로 입력해주세요`);
+  } else if (priceRaw && (isNaN(price) || price <= 0)) {
+    // 잘못된 숫자는 submit 시 처리
+  } else {
+    setErr('price', '');
+  }
+
+  // 빈 입력 / 현재가 초과 / 수량 초과 시 버튼 비활성화
+  const tooHigh = price > cap;
+  const tooMany = qty > QTY_MAX;
+  document.getElementById('buy-btn').disabled = !priceRaw || !qtyRaw || tooHigh || tooMany;
 }
 
 function setErr(field, msg) {
@@ -964,20 +1214,36 @@ function setErr(field, msg) {
   else input.classList.remove('error');
 }
 
+const PRICE_MAX = 99999999;  // 8자리 (시세 조회 실패 시 fallback)
+const QTY_MAX = 9999;        // 4자리
+
+function getPriceCap() {
+  return recommendation?.price ?? PRICE_MAX;
+}
+
 function validateBuy() {
   const price = document.getElementById('price').value.trim();
   const qty = document.getElementById('qty').value.trim();
   let valid = true;
 
   const priceNum = Number(price);
+  const cap = getPriceCap();
+  const cur = recommendation?.currency || 'KRW';
+
   if (!price || isNaN(priceNum) || priceNum <= 0) {
     setErr('price', '올바른 숫자를 입력해주세요');
+    valid = false;
+  } else if (priceNum > cap) {
+    setErr('price', `현재가 ${formatPrice(cap, cur)} 이하로 입력해주세요`);
     valid = false;
   } else setErr('price', '');
 
   const qtyNum = Number(qty);
   if (!qty || isNaN(qtyNum) || qtyNum < 1 || !Number.isInteger(qtyNum)) {
     setErr('qty', '올바른 숫자를 입력해주세요');
+    valid = false;
+  } else if (qtyNum > QTY_MAX) {
+    setErr('qty', `${QTY_MAX.toLocaleString()}주 이하로 입력해주세요`);
     valid = false;
   } else setErr('qty', '');
 
@@ -1024,24 +1290,71 @@ async function handleBuy() {
   }
 }
 
+let lastFeedbackCopyText = '';
+
 function showFeedback(lines) {
   const titles = ['현재 종목 상태', '리스크 포인트', '추천 액션'];
-  const html = lines.map((line, i) => `
+  // 시스템 프롬프트가 "- 라벨: 본문" 포맷으로 응답하므로
+  // UI 라벨과 중복되지 않게 본문만 추출
+  const stripPrefix = (line) => line
+    .replace(/^-\s*/, '')
+    .replace(/^(현재 종목 상태( 요약)?|리스크 포인트|추천 액션)\s*[:：]\s*/, '');
+
+  const cleaned = lines.map(stripPrefix);
+
+  const html = cleaned.map((text, i) => `
     <div class="feedback-line">
       <div class="line-num">${i + 1}</div>
       <div class="line-body">
         <div class="line-title">${titles[i] || ''}</div>
-        <div class="line-text">${escapeHtml(line.replace(/^-\s*/, ''))}</div>
+        <div class="line-text">${escapeHtml(text)}</div>
       </div>
     </div>
   `).join('');
 
+  // 복사용 텍스트 (종목명 + 3줄)
+  const stockName = recommendation?.name || '';
+  const header = stockName ? `[${stockName}] AI 피드백\n` : 'AI 피드백\n';
+  lastFeedbackCopyText = header + cleaned
+    .map((t, i) => `${i + 1}. ${titles[i] || ''}: ${t}`)
+    .join('\n');
+
   document.getElementById('fb-result').innerHTML = `
     <div class="result">
-      <div class="result-label">AI 피드백</div>
+      <div class="result-header">
+        <div class="result-label">AI 피드백</div>
+        <button class="copy-btn" id="fb-copy-btn" onclick="copyFeedback()">복사하기</button>
+      </div>
       <div class="feedback-lines">${html}</div>
     </div>
   `;
+}
+
+async function copyFeedback() {
+  const text = lastFeedbackCopyText;
+  if (!text) return;
+  const btn = document.getElementById('fb-copy-btn');
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch (e) {
+    // fallback for older browsers / non-secure contexts
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch (_) {}
+    ta.remove();
+  }
+  if (btn) {
+    btn.textContent = '복사됨';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = '복사하기';
+      btn.classList.remove('copied');
+    }, 1500);
+  }
 }
 
 function showFeedbackError(msg) {
@@ -1055,11 +1368,16 @@ function showFeedbackError(msg) {
 }
 
 function showFeedbackNotice(msg) {
-  // dash 없는 단일 메시지 (예: "정보를 찾기 어려운 종목이에요")
+  // dash 없는 단일 메시지 (예: "비정상적인 수치로 투자 분석이 불가능합니다")
+  const needsRetry = /다시\s*시도|재입력|수정/.test(msg);
+  const retryBtn = needsRetry
+    ? `<button class="btn btn-secondary" style="margin-top:14px;" onclick="showScreen('screen-buy', 3)">수정하러 가기</button>`
+    : '';
   document.getElementById('fb-result').innerHTML = `
     <div class="result">
       <div class="result-label">AI 안내</div>
       <div class="error-msg">${escapeHtml(msg)}</div>
+      ${retryBtn}
     </div>
   `;
 }
@@ -1079,6 +1397,23 @@ function restart() {
   renderOnboarding();
   showScreen('screen-onboarding', 1);
 }
+
+/* ============== Theme ============== */
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  const btn = document.getElementById('theme-toggle');
+  if (btn) btn.textContent = theme === 'dark' ? '☾' : '☀';
+}
+
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+  const next = cur === 'dark' ? 'light' : 'dark';
+  applyTheme(next);
+  localStorage.setItem('theme', next);
+}
+
+// 초기 테마 적용 (FOUC 방지를 위해 가능한 한 빨리)
+applyTheme(localStorage.getItem('theme') || 'dark');
 
 /* ============== Settings ============== */
 function openSettings() {
