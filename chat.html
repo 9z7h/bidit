@@ -1052,31 +1052,20 @@ function getApiKey() {
 }
 
 async function callClaude(system, userMessage, { json = false } = {}) {
-  const apiKey = getApiKey();
-  if (!apiKey) {
-    const err = new Error('NO_API_KEY');
-    err.code = 'NO_API_KEY';
-    throw err;
-  }
-
+  // 서버 프록시 경유 — 키는 서버에서 관리, 도구 호출(시세·뉴스·공시)도 서버가 처리
+  // json=true 일 때는 도구 비활성화 (RECOMMEND_SYSTEM의 JSON 출력과 충돌 방지)
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 20000);
+  const timeout = setTimeout(() => controller.abort(), 45000);
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('/api/chat', {
       method: 'POST',
       signal: controller.signal,
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-haiku-4-5',
-        max_tokens: 1024,
         system,
-        messages: [{ role: 'user', content: userMessage }]
+        userMessage,
+        useTools: !json
       })
     });
     clearTimeout(timeout);
@@ -1090,7 +1079,7 @@ async function callClaude(system, userMessage, { json = false } = {}) {
     }
 
     const data = await res.json();
-    return data.content?.[0]?.text || '';
+    return data.text || '';
   } finally {
     clearTimeout(timeout);
   }
@@ -1545,7 +1534,31 @@ const TERM_GLOSSARY = {
   '금융주': '은행·보험·증권사 등 금융 회사 주식',
   '테마주': '특정 이슈·트렌드와 묶여 거래되는 종목',
   '환율 변동성': '원·달러 환율이 크게 변하는 정도',
-  '단기 반등': '짧은 기간에 일어나는 주가 회복'
+  '단기 반등': '짧은 기간에 일어나는 주가 회복',
+  '분산투자': '여러 종목·자산에 나눠 투자해 위험을 줄이는 방법',
+  '집중투자': '특정 종목·자산에 자금을 모아 투자하는 방법',
+  '장기투자': '몇 년 이상 길게 보유하는 투자',
+  '단기투자': '며칠~몇 주 짧게 보유하는 투자',
+  '리밸런싱': '포트폴리오 비중을 원래 목표 비율로 다시 맞추는 것',
+  '포트폴리오': '보유 중인 모든 자산·종목의 구성',
+  '레버리지': '빌린 돈으로 투자 규모를 키우는 것. 위험도 커짐',
+  '공매도': '주식을 빌려서 먼저 팔고 나중에 다시 사서 갚는 거래',
+  '예수금': '증권 계좌에 들어 있지만 아직 주식을 사지 않은 현금',
+  '시초가': '장이 시작할 때 처음 거래된 가격',
+  '상한가': '하루 동안 오를 수 있는 최대 가격 (국내 +30%)',
+  '하한가': '하루 동안 내릴 수 있는 최저 가격 (국내 -30%)',
+  '실적시즌': '기업들이 분기 실적을 발표하는 시기',
+  '컨센서스': '여러 증권사 애널리스트 전망의 평균',
+  '서킷브레이커': '주가가 급락할 때 거래를 일시 중단시키는 제도',
+  '사이드카': '선물 가격 급변 시 현물 거래를 5분간 제한하는 제도',
+  '액티브': '시장 평균보다 높은 수익을 노리는 적극 운용 방식',
+  '패시브': '지수를 그대로 따라가는 소극 운용 방식',
+  'ETF': '여러 종목을 묶어 거래소에서 주식처럼 사고파는 펀드',
+  '시장가': '현재 가격으로 즉시 거래하는 주문',
+  '지정가': '원하는 가격을 지정해서 내는 주문',
+  '갭상승': '전일 종가보다 높은 가격에 장이 시작되는 것',
+  '갭하락': '전일 종가보다 낮은 가격에 장이 시작되는 것',
+  '호가': '사거나 팔 때 제시하는 가격'
 };
 
 function renderTerms(text) {
@@ -1562,11 +1575,12 @@ function renderTerms(text) {
   }
 
   // 2단계: 단어 단위 용어(공백 없음) regex로 치환
+  // 사전에 있는 용어만 툴팁 부착. 없으면 별표만 제거하고 평문 처리.
   html = html.replace(/([가-힣A-Za-z0-9]+)\*/g, (_, term) => {
     const tip = TERM_GLOSSARY[term];
     return tip
       ? `<span class="term" tabindex="0" data-tip="${escapeHtml(tip)}">${term}</span>`
-      : `<span class="term">${term}</span>`;
+      : term;
   });
 
   return html;
@@ -1633,10 +1647,7 @@ document.getElementById('settings-modal').addEventListener('click', (e) => {
 renderOnboarding();
 showScreen('screen-onboarding', 1);
 
-// 첫 진입 시 키 없으면 안내
-if (!getApiKey()) {
-  setTimeout(openSettings, 400);
-}
+// 키는 서버에서 관리 — 모달 자동 안내 비활성화
 </script>
 </body>
 </html>
