@@ -26,9 +26,9 @@
     --amber: #ffb547;
     --amber-dim: rgba(255,181,71,0.14);
     --text: #f5f6f8;
-    --text-secondary: #b0b8c1;
+    --text-secondary: #9da6b1;
     --text-tertiary: #8b95a1;
-    --label: #b0b8c1;
+    --label: #9da6b1;
     --btn-text: #0A2533;
     --accent-text: var(--primary);
     --term: #ffffff;
@@ -84,7 +84,7 @@
     flex-shrink: 0;
   }
   .sidebar-username {
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--text);
     letter-spacing: -0.025em;
@@ -98,7 +98,8 @@
     display: block;
     padding: 11px 14px;
     border-radius: 10px;
-    font-size: 15px;
+    margin-top: 4px;
+    font-size: 14px;
     font-weight: 500;
     color: var(--text-secondary);
     cursor: pointer;
@@ -187,14 +188,14 @@
   /* Headers */
   .badge {
     display: inline-block;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 600;
     letter-spacing: -0.025em;
     color: var(--accent-text);
     background: var(--primary-soft);
     border-radius: 999px;
     padding: 5px 11px;
-    margin-bottom: 12px;
+    margin-bottom: 18px;
   }
   h1 {
     font-size: 26px;
@@ -206,7 +207,7 @@
   h1 span { color: var(--accent-text); }
   .subtitle {
     margin-top: 10px;
-    font-size: 15px;
+    font-size: 14px;
     color: var(--text-secondary);
     line-height: 1.55;
     letter-spacing: -0.025em;
@@ -222,15 +223,15 @@
 
   /* Choice list (onboarding) */
   .choice-list {
-    margin-top: 28px;
-    display: flex; flex-direction: column; gap: 8px;
+    margin-top: 30px;
+    display: flex; flex-direction: column; gap: 10px;
   }
   .choice {
     width: 100%;
     text-align: left;
     background: var(--surface2);
     border: none;
-    border-radius: 14px;
+    border-radius: 12px;
     padding: 18px 20px;
     color: var(--text);
     font-family: inherit;
@@ -239,24 +240,25 @@
     transition: background 0.15s, transform 0.08s;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 8px;
     letter-spacing: -0.025em;
   }
   .choice:hover { background: var(--primary-soft); }
   .choice:active { transform: scale(0.99); }
-  .choice strong { font-weight: 600; font-size: 16px; color: var(--text); }
+  .choice strong { font-weight: 600; font-size: 16px; color: var(--text); line-height: 1.2; }
   .choice em {
     font-style: normal;
-    font-size: 13px;
+    font-size: 14px;
     color: var(--text-secondary);
     font-weight: 400;
+    line-height: 1.3;
   }
 
   /* Form */
-  .form { display: flex; flex-direction: column; gap: 18px; margin-top: 28px; }
+  .form { display: flex; flex-direction: column; gap: 18px; margin-top: 30px; }
   .field { display: flex; flex-direction: column; gap: 8px; }
   label {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 500;
     color: var(--text-secondary);
     letter-spacing: -0.025em;
@@ -268,7 +270,7 @@
     gap: 8px;
   }
   .hint {
-    font-size: 12px;
+    font-size: 14px;
     color: var(--text-tertiary);
     font-weight: 500;
   }
@@ -296,10 +298,49 @@
     background: var(--red-dim);
   }
   .field-error {
-    font-size: 13px;
+    font-size: 14px;
     color: var(--red);
     min-height: 18px;
     font-weight: 500;
+  }
+  .readonly-price {
+    background: var(--surface2);
+    border-radius: 12px;
+    padding: 16px 18px;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.025em;
+  }
+  .readonly-price.unavailable {
+    color: var(--text-tertiary);
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .info-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    margin-left: 4px;
+    font-size: 11px;
+    line-height: 1;
+    font-weight: 700;
+    color: var(--text-tertiary);
+    border: 1px solid var(--text-tertiary);
+    border-radius: 50%;
+    cursor: help;
+    position: relative;
+    vertical-align: -2px;
+    font-style: normal;
+    user-select: none;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .info-icon:hover,
+  .info-icon:focus-visible {
+    color: var(--text);
+    border-color: var(--text);
   }
 
   /* Buttons */
@@ -351,7 +392,7 @@
   /* Loader (uiverse "Generating" style, Toss blue) */
   .loader-wrap {
     width: 100%;
-    margin: 48px auto 0;
+    margin: 36px auto 0;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -442,7 +483,7 @@
     box-sizing: border-box;
     padding: 18px 20px;
     background: var(--surface2);
-    border-radius: 16px;
+    border-radius: 12px;
     display: flex;
     flex-direction: column;
     gap: 6px;
@@ -450,9 +491,9 @@
   }
   .loading-tip.fade-out { opacity: 0; }
   .loading-tip-label {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 600;
-    color: var(--accent-text);
+    color: #AFB8C2;
     letter-spacing: -0.025em;
   }
   .loading-tip-text {
@@ -482,17 +523,17 @@
 
   /* Recommendation cards */
   .rec-list {
-    margin-top: 28px;
+    margin-top: 30px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
   }
   .rec-card {
     width: 100%;
     text-align: left;
     background: var(--surface2);
     border: none;
-    border-radius: 16px;
+    border-radius: 12px;
     padding: 18px 20px;
     color: var(--text);
     font-family: inherit;
@@ -518,13 +559,13 @@
   .rec-price {
     font-size: 16px;
     font-weight: 700;
-    color: var(--text);
+    color: var(--primary);
     white-space: nowrap;
     letter-spacing: -0.025em;
     font-feature-settings: 'tnum';
   }
   .rec-price.unavailable {
-    font-size: 13px;
+    font-size: 14px;
     color: var(--text-tertiary);
     font-weight: 500;
   }
@@ -536,19 +577,19 @@
   }
 
   .step-guide {
-    margin-top: 28px;
+    margin-top: 30px;
     display: flex; flex-direction: column; gap: 8px;
   }
   .step-guide-title {
-    font-size: 13px;
-    font-weight: 600;
+    font-size: 14px;
+    font-weight: 400;
     color: var(--text-secondary);
     margin-bottom: 4px;
     letter-spacing: -0.025em;
   }
   #step-list {
     background: var(--surface2);
-    border-radius: 14px;
+    border-radius: 12px;
     padding: 4px 4px;
   }
   .step-item {
@@ -561,11 +602,11 @@
   .step-num {
     flex-shrink: 0;
     width: 22px; height: 22px;
-    background: var(--primary-soft);
+    background: #1F2028;
     border-radius: 50%;
     font-size: 12px;
-    font-weight: 700;
-    color: var(--accent-text);
+    font-weight: 600;
+    color: #AFB8C2;
     display: flex; align-items: center; justify-content: center;
     margin-top: 1px;
   }
@@ -579,7 +620,7 @@
   /* Feedback result */
   .result {
     margin-top: 28px;
-    border-radius: 18px;
+    border-radius: 12px;
     padding: 22px 20px;
     background: var(--surface);
     border: 1px solid var(--border);
@@ -589,7 +630,7 @@
     border-color: transparent;
   }
   .result-label {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
     margin-bottom: 16px;
     color: var(--accent-text);
@@ -610,7 +651,7 @@
     color: var(--accent-text);
     padding: 7px 13px;
     border-radius: 999px;
-    font-size: 12px;
+    font-size: 14px;
     font-family: inherit;
     font-weight: 600;
     cursor: pointer;
@@ -633,9 +674,9 @@
     width: 24px; height: 24px;
     background: var(--primary);
     border-radius: 50%;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 700;
-    color: var(--btn-text);
+    color: #fff;
     display: flex; align-items: center; justify-content: center;
     margin-top: 1px;
   }
@@ -646,7 +687,7 @@
     flex: 1;
   }
   .line-title {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--accent-text);
     letter-spacing: -0.025em;
@@ -659,22 +700,89 @@
     letter-spacing: -0.025em;
   }
 
+  /* Investment history */
+  .history-list {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .history-item {
+    background: var(--surface2);
+    border-radius: 12px;
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    letter-spacing: -0.025em;
+  }
+  .history-item-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .history-item-name {
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--text);
+  }
+  .history-item-date {
+    font-size: 14px;
+    color: var(--text-tertiary);
+    font-feature-settings: 'tnum';
+    white-space: nowrap;
+  }
+  .history-item-meta {
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-feature-settings: 'tnum';
+  }
+  .history-item-fb {
+    margin-top: 6px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+  .history-empty {
+    margin-top: 60px;
+    text-align: center;
+    color: var(--text-tertiary);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .history-empty .hint {
+    margin-top: 6px;
+    color: var(--text-tertiary);
+    font-size: 14px;
+  }
+  .history-clear {
+    margin-top: 16px;
+    background: transparent;
+    border: none;
+    color: var(--text-tertiary);
+    font-size: 14px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    align-self: center;
+    transition: color 0.15s, background 0.15s;
+  }
+  .history-clear:hover {
+    color: var(--red);
+    background: var(--red-dim);
+  }
+
   /* Stock term tooltip */
   .term {
     display: inline;
     cursor: help;
     position: relative;
-    font-weight: 700;
-    color: var(--term);
-    border-bottom: 1px dotted transparent;
-    transition: border-color 0.15s ease;
+    color: inherit;
+    font-weight: inherit;
   }
-  .term[data-tip]:hover,
-  .term[data-tip]:focus-visible {
-    border-bottom-color: var(--text-tertiary);
-  }
-  .term[data-tip]:hover::before,
-  .term[data-tip]:focus-visible::before {
+  [data-tip]:hover::before,
+  [data-tip]:focus-visible::before {
     content: attr(data-tip);
     position: absolute;
     bottom: calc(100% + 8px);
@@ -684,7 +792,7 @@
     color: var(--bg);
     padding: 8px 12px;
     border-radius: 8px;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 500;
     width: max-content;
     max-width: 220px;
@@ -695,8 +803,8 @@
     pointer-events: none;
     box-shadow: 0 4px 12px rgba(0,0,0,0.18);
   }
-  .term[data-tip]:hover::after,
-  .term[data-tip]:focus-visible::after {
+  [data-tip]:hover::after,
+  [data-tip]:focus-visible::after {
     content: '';
     position: absolute;
     bottom: calc(100% + 2px);
@@ -720,7 +828,7 @@
     margin-top: 4px;
     padding: 16px 18px;
     background: var(--surface2);
-    border-radius: 14px;
+    border-radius: 12px;
     font-size: 14px;
     color: var(--text-secondary);
     line-height: 1.6;
@@ -792,7 +900,7 @@
     padding: 14px 16px calc(14px + env(safe-area-inset-bottom));
     background: var(--bg);
     border-top: 0px solid var(--surface2);
-    font-size: 12px;
+    font-size: 14px;
     color: #555;
     line-height: 1.55;
     text-align: center;
@@ -828,8 +936,8 @@
       <div class="sidebar-username">리딧님</div>
     </div>
     <nav class="sidebar-nav">
-      <div class="sidebar-link active">홈</div>
-      <div class="sidebar-link">투자기록</div>
+      <div class="sidebar-link active" data-nav="home" onclick="navHome()">홈</div>
+      <div class="sidebar-link" data-nav="history" onclick="navHistory()">투자기록</div>
     </nav>
   </aside>
 
@@ -908,18 +1016,17 @@
     <div class="form">
       <div class="field">
         <div class="label-row">
-          <label id="price-label">매수 가격 (원)</label>
-          <span class="hint" id="price-hint"></span>
+          <label id="price-label">현재가</label>
+          <span class="hint">시장가로 매수돼요</span>
         </div>
-        <input id="price" type="text" inputmode="decimal" placeholder="예: 71000" maxlength="8">
-        <span class="field-error" id="err-price"></span>
+        <div class="readonly-price" id="price-display">—</div>
       </div>
       <div class="field">
         <div class="label-row">
-          <label>매수 수량 (주)</label>
+          <label>매수 수량 (주)<i class="info-icon" tabindex="0" data-tip="소수점도 가능해요 (예: 0.5주)">i</i></label>
           <span class="hint">최대 999주</span>
         </div>
-        <input id="qty" type="text" inputmode="numeric" placeholder="예: 10" maxlength="3">
+        <input id="qty" type="text" inputmode="decimal" placeholder="예: 0.5 또는 2" maxlength="8">
         <span class="field-error" id="err-qty"></span>
       </div>
       <div class="summary" id="buy-summary" style="display:none;">
@@ -959,6 +1066,18 @@
       </svg>
       처음부터 다시 시작하기
     </div>
+  </div>
+
+  <!-- Screen 5: History -->
+  <div class="screen" id="screen-history">
+    <h1>투자 기록</h1>
+    <p class="subtitle" id="history-subtitle">지금까지의 가상 매수 내역이에요.</p>
+    <div class="history-list" id="history-list"></div>
+    <div class="history-empty" id="history-empty" style="display:none;">
+      <p>아직 기록이 없어요.</p>
+      <p class="hint">홈에서 가상 매수를 시작해보세요.</p>
+    </div>
+    <button class="history-clear" id="history-clear" onclick="clearHistory()" style="display:none;">전체 기록 삭제</button>
   </div>
 
 </div>
@@ -1093,10 +1212,13 @@ LG화학 "051910", 삼성SDI "006400", LG에너지솔루션 "373220",
 - 안정형 → 대형주·배당주 (삼성전자·KB금융·KO·JNJ·PG·MCD)
 - 성장형 → 성장주·테마주 (에코프로·NVDA.O·TSLA.O·META.O·셀트리온)
 - 학습형 → 누구나 아는 종목 (삼성전자·AAPL.O·KO·DIS)
-- 관심 업종이 IT면 기술주(NVDA.O·MSFT.O·SK하이닉스·네이버) 비중 높이기
-- 관심 업종이 금융이면 금융주(JPM·V·KB금융·신한지주) 비중 높이기
-- 관심 업종이 의료면 바이오·헬스케어(셀트리온·삼성바이오로직스·JNJ·PFE) 비중 높이기
-- 관심 업종이 엔터면 콘텐츠·미디어(카카오·DIS·NFLX.O) 비중 높이기
+- ⚠️ 업종 우선 원칙: 관심 업종이 '상관없음'이 아니면 stocks 3개 **모두** 해당 업종에서만 골라라. 성향은 그 업종 안에서 종목 선별 기준일 뿐이고, 업종을 무시하고 다른 섹터를 끼워 넣지 마라.
+- IT → 기술주만: NVDA.O·MSFT.O·AAPL.O·META.O·AMZN.O·GOOGL.O·AMD·INTC.O·SK하이닉스·삼성전자·네이버·카카오·LG에너지솔루션
+- 금융 → 금융주만: JPM·V·MA·KB금융·신한지주·하나금융지주
+- 의료 → 바이오·헬스케어만: JNJ·PFE·셀트리온·삼성바이오로직스
+- 엔터 → 콘텐츠·미디어만: DIS·NFLX.O·META.O·카카오·네이버
+- '상관없음'일 때만 위 카테고리 자유롭게 혼합 가능
+- 한 업종에 후보가 부족하면 그 안에서 가능한 만큼 추천하고 시장 다양성 룰(KR·US 혼합)도 가능한 범위 내에서 지키기
 - steps 는 반드시 3개. 어떤 종목에도 적용되는 일반적 행동 (예: "현재가 차트 한 번 보기")
 - steps 는 매수 권유 표현 금지 ("지금 사세요" 등). 확인·점검 행동 중심으로`;
 
@@ -1364,10 +1486,9 @@ async function loadRecommendation() {
       const priceHtml = s.price
         ? `<div class="rec-price">${formatPrice(s.price, s.currency)}</div>`
         : `<div class="rec-price unavailable">시세 조회 실패</div>`;
-      const flag = s.market === 'US' ? '🇺🇸' : '🇰🇷';
       card.innerHTML = `
         <div class="rec-row">
-          <div class="rec-name">${flag} ${escapeHtml(s.name)}</div>
+          <div class="rec-name">${escapeHtml(s.name)}</div>
           ${priceHtml}
         </div>
         <div class="rec-reason">${renderTerms(s.reason)}</div>
@@ -1397,96 +1518,74 @@ async function loadRecommendation() {
 }
 
 /* ============== Buy ============== */
+// 소수점 매수 허용. 표시 시 불필요한 0 제거 (1.0 → 1, 0.500 → 0.5)
+function formatQty(q) {
+  const n = Number(q);
+  if (!Number.isFinite(n)) return String(q);
+  return parseFloat(n.toFixed(4)).toString();
+}
+
 function goToBuy(idx) {
   recommendation = recommendations[idx];
-  const flag = recommendation.market === 'US' ? '🇺🇸 ' : '🇰🇷 ';
-  document.getElementById('buy-stockname').textContent = flag + recommendation.name;
-  document.getElementById('price').value = recommendation.price ?? '';
+  document.getElementById('buy-stockname').textContent = recommendation.name;
   document.getElementById('qty').value = '';
-  document.getElementById('price-label').textContent =
-    recommendation.currency === 'USD' ? '매수 가격 ($)' : '매수 가격 (원)';
 
-  const hint = document.getElementById('price-hint');
+  const priceEl = document.getElementById('price-display');
   if (recommendation.price != null) {
-    hint.textContent = `현재가 ${formatPrice(recommendation.price, recommendation.currency)}`;
+    priceEl.textContent = formatPrice(recommendation.price, recommendation.currency);
+    priceEl.classList.remove('unavailable');
   } else {
-    hint.textContent = '';
+    priceEl.textContent = '시세를 가져올 수 없어요';
+    priceEl.classList.add('unavailable');
   }
 
-  setErr('price', '');
   setErr('qty', '');
   updateBuySummary();
   showScreen('screen-buy', 3);
 }
 
 function updateBuySummary() {
-  const priceRaw = document.getElementById('price').value.trim();
   const qtyRaw = document.getElementById('qty').value.trim();
-  const price = Number(priceRaw);
   const qty = Number(qtyRaw);
-  const summary = document.getElementById('buy-summary');
+  const price = recommendation?.price;
   const cur = recommendation?.currency || 'KRW';
-  const cap = getPriceCap();
+  const summary = document.getElementById('buy-summary');
 
-  if (price > 0 && qty > 0) {
+  if (price > 0 && qty > 0 && Number.isFinite(qty)) {
     document.getElementById('buy-total').textContent = formatPrice(price * qty, cur);
     summary.style.display = 'flex';
   } else {
     summary.style.display = 'none';
   }
 
-  // 현재가 초과 시 즉시 에러 표시
-  if (priceRaw && price > cap) {
-    setErr('price', `현재가 ${formatPrice(cap, cur)} 이하로 입력해주세요`);
-  } else if (priceRaw && (isNaN(price) || price <= 0)) {
-    // 잘못된 숫자는 submit 시 처리
-  } else {
-    setErr('price', '');
-  }
-
-  // 빈 입력 / 현재가 초과 / 수량 초과 시 버튼 비활성화
-  const tooHigh = price > cap;
   const tooMany = qty > QTY_MAX;
-  document.getElementById('buy-btn').disabled = !priceRaw || !qtyRaw || tooHigh || tooMany;
+  const noPrice = !(price > 0);
+  document.getElementById('buy-btn').disabled =
+    !qtyRaw || !(qty > 0) || tooMany || noPrice;
 }
 
 function setErr(field, msg) {
   const el = document.getElementById('err-' + field);
   const input = document.getElementById(field);
+  if (!el || !input) return;
   el.textContent = msg;
   if (msg) input.classList.add('error');
   else input.classList.remove('error');
 }
 
-const PRICE_MAX = 99999999;  // 8자리 (시세 조회 실패 시 fallback)
-// 최대 수량은 어떤 종목·통화에서도 총 매수 금액이 AI가 "비정상"으로 판단하는
-// 수십억원/달러 범위에 들지 않도록 999주로 제한
-const QTY_MAX = 999;         // 3자리
-
-function getPriceCap() {
-  return recommendation?.price ?? PRICE_MAX;
-}
+// 최대 수량 — 가상 매수 총액이 비현실적으로 커지지 않도록 999주로 제한
+const QTY_MAX = 999;
 
 function validateBuy() {
-  const price = document.getElementById('price').value.trim();
   const qty = document.getElementById('qty').value.trim();
+  const qtyNum = Number(qty);
   let valid = true;
 
-  const priceNum = Number(price);
-  const cap = getPriceCap();
-  const cur = recommendation?.currency || 'KRW';
-
-  if (!price || isNaN(priceNum) || priceNum <= 0) {
-    setErr('price', '올바른 숫자를 입력해주세요');
+  if (!recommendation?.price) {
+    setErr('qty', '시세를 가져올 수 없어 매수할 수 없어요');
     valid = false;
-  } else if (priceNum > cap) {
-    setErr('price', `현재가 ${formatPrice(cap, cur)} 이하로 입력해주세요`);
-    valid = false;
-  } else setErr('price', '');
-
-  const qtyNum = Number(qty);
-  if (!qty || isNaN(qtyNum) || qtyNum < 1 || !Number.isInteger(qtyNum)) {
-    setErr('qty', '올바른 숫자를 입력해주세요');
+  } else if (!qty || isNaN(qtyNum) || qtyNum <= 0) {
+    setErr('qty', '올바른 수량을 입력해주세요');
     valid = false;
   } else if (qtyNum > QTY_MAX) {
     setErr('qty', `${QTY_MAX.toLocaleString()}주 이하로 입력해주세요`);
@@ -1499,15 +1598,17 @@ function validateBuy() {
 async function handleBuy() {
   if (!validateBuy()) return;
 
-  const price = document.getElementById('price').value.trim();
-  const qty = document.getElementById('qty').value.trim();
+  const price = recommendation.price;
+  const qtyRaw = document.getElementById('qty').value.trim();
+  const qty = Number(qtyRaw);
   const stockName = recommendation.name;
   const currency = recommendation.currency || 'KRW';
   const isUsd = currency === 'USD';
+  const qtyDisplay = formatQty(qty);
 
   document.getElementById('fb-title').innerHTML = `<span>${escapeHtml(stockName)}</span> 매수 완료`;
   document.getElementById('fb-summary').textContent =
-    `${formatPrice(Number(price), currency)} × ${qty}주 = ${formatPrice(Number(price) * Number(qty), currency)}`;
+    `${formatPrice(price, currency)} × ${qtyDisplay}주 = ${formatPrice(price * qty, currency)}`;
   document.getElementById('fb-loading').style.display = 'block';
   document.getElementById('fb-result').innerHTML = '';
 
@@ -1515,7 +1616,7 @@ async function handleBuy() {
 
   try {
     const priceLabel = isUsd ? `$${price}` : `${price}원`;
-    const userMsg = `종목명: ${stockName} / 매수 가격: ${priceLabel} / 매수 수량: ${qty}주`;
+    const userMsg = `종목명: ${stockName} / 매수 가격: ${priceLabel} / 매수 수량: ${qtyDisplay}주`;
     const text = await callClaude(FEEDBACK_SYSTEM, userMsg);
     const trimmed = text.trim();
     const lines = trimmed.split('\n').map(l => l.trim()).filter(l => l.startsWith('-'));
@@ -1574,6 +1675,18 @@ function showFeedback(lines) {
       <div class="feedback-lines">${html}</div>
     </div>
   `;
+
+  // 투자 기록 저장
+  saveInvestment({
+    id: Date.now(),
+    date: new Date().toISOString(),
+    name: recommendation?.name || '',
+    market: recommendation?.market || '',
+    currency: recommendation?.currency || 'KRW',
+    price: recommendation?.price ?? null,
+    qty: Number(document.getElementById('qty').value) || 0,
+    feedback: cleaned
+  });
 }
 
 async function copyFeedback() {
@@ -1760,16 +1873,16 @@ function renderTerms(text) {
     if (!term.includes(' ')) continue;
     const re = new RegExp(reEscape(term) + '\\*', 'g');
     html = html.replace(re, () =>
-      `<span class="term" tabindex="0" data-tip="${escapeHtml(TERM_GLOSSARY[term])}">${term}</span>`
+      `<span class="term" tabindex="0" data-tip="${escapeHtml(TERM_GLOSSARY[term])}">'${term}'</span>`
     );
   }
 
   // 2단계: 단어 단위 용어(공백 없음) regex로 치환
-  // 사전에 있는 용어만 툴팁 부착. 없으면 별표만 제거하고 평문 처리.
+  // 사전에 있는 용어만 따옴표+툴팁 부착. 없으면 별표만 제거하고 평문 처리.
   html = html.replace(/([가-힣A-Za-z0-9]+)\*/g, (_, term) => {
     const tip = TERM_GLOSSARY[term];
     return tip
-      ? `<span class="term" tabindex="0" data-tip="${escapeHtml(tip)}">${term}</span>`
+      ? `<span class="term" tabindex="0" data-tip="${escapeHtml(tip)}">'${term}'</span>`
       : term;
   });
 
@@ -1806,12 +1919,121 @@ function saveApiKey() {
   closeSettings();
 }
 
-/* ============== Init ============== */
-['price', 'qty'].forEach(id => {
-  document.getElementById(id).addEventListener('input', () => {
-    setErr(id, '');
-    updateBuySummary();
+/* ============== Investment history ============== */
+const HISTORY_KEY = 'investment_history';
+const HISTORY_LIMIT = 50;
+let _viewBeforeHistory = null;
+
+function getInvestments() {
+  try {
+    return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveInvestment(record) {
+  try {
+    const all = getInvestments();
+    all.push(record);
+    const trimmed = all.slice(-HISTORY_LIMIT);
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(trimmed));
+  } catch (e) {}
+}
+
+function clearHistory() {
+  if (!confirm('투자 기록을 모두 삭제할까요?')) return;
+  try { localStorage.removeItem(HISTORY_KEY); } catch (e) {}
+  renderHistory();
+}
+
+function formatHistoryDate(iso) {
+  try {
+    const d = new Date(iso);
+    const Y = d.getFullYear();
+    const M = String(d.getMonth() + 1).padStart(2, '0');
+    const D = String(d.getDate()).padStart(2, '0');
+    const h = String(d.getHours()).padStart(2, '0');
+    const m = String(d.getMinutes()).padStart(2, '0');
+    return `${Y}.${M}.${D} ${h}:${m}`;
+  } catch (e) {
+    return iso;
+  }
+}
+
+function renderHistory() {
+  const list = getInvestments().slice().reverse();
+  const listEl = document.getElementById('history-list');
+  const emptyEl = document.getElementById('history-empty');
+  const clearBtn = document.getElementById('history-clear');
+
+  if (list.length === 0) {
+    listEl.innerHTML = '';
+    listEl.style.display = 'none';
+    emptyEl.style.display = 'block';
+    clearBtn.style.display = 'none';
+    return;
+  }
+
+  emptyEl.style.display = 'none';
+  listEl.style.display = 'flex';
+  clearBtn.style.display = 'block';
+
+  listEl.innerHTML = list.map((r) => {
+    const total = (r.price || 0) * (r.qty || 0);
+    const qtyDisp = formatQty(r.qty);
+    const totalStr = formatPrice(total, r.currency);
+    const priceStr = r.price != null ? formatPrice(r.price, r.currency) : '시세 불명';
+    const firstFb = (r.feedback || [])[0] || '';
+    return `
+      <div class="history-item">
+        <div class="history-item-head">
+          <div class="history-item-name">${escapeHtml(r.name || '—')}</div>
+          <div class="history-item-date">${formatHistoryDate(r.date)}</div>
+        </div>
+        <div class="history-item-meta">${priceStr} × ${qtyDisp}주 = <strong>${totalStr}</strong></div>
+        ${firstFb ? `<div class="history-item-fb">${renderTerms(firstFb)}</div>` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+/* ============== Sidebar navigation ============== */
+function setActiveSidebar(key) {
+  document.querySelectorAll('.sidebar-link').forEach((el) => {
+    el.classList.toggle('active', el.dataset.nav === key);
   });
+}
+
+function navHistory() {
+  const cur = document.querySelector('.screen.active');
+  if (cur && cur.id !== 'screen-history') _viewBeforeHistory = cur.id;
+  renderHistory();
+  showScreen('screen-history', 0);
+  setActiveSidebar('history');
+}
+
+function navHome() {
+  const dotMap = {
+    'screen-onboarding': 1,
+    'screen-recommend': 2,
+    'screen-buy': 3,
+    'screen-feedback': 4
+  };
+  let target = _viewBeforeHistory;
+  if (!target || target === 'screen-history') {
+    if (recommendations.length > 0) target = 'screen-recommend';
+    else target = 'screen-onboarding';
+  }
+  showScreen(target, dotMap[target] || 1);
+  setActiveSidebar('home');
+  _viewBeforeHistory = null;
+}
+
+/* ============== Init ============== */
+document.getElementById('qty').addEventListener('input', () => {
+  setErr('qty', '');
+  updateBuySummary();
 });
 
 document.getElementById('settings-modal').addEventListener('click', (e) => {
