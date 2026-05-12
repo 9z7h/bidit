@@ -4,47 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>주식가이드 · 5분이면 충분해요</title>
-<script>
-  // FOUC 방지: 스타일/DOM 로드 전 테마 즉시 적용
-  (function() {
-    try {
-      var t = localStorage.getItem('theme') || 'light';
-      document.documentElement.setAttribute('data-theme', t);
-    } catch (e) {}
-  })();
-</script>
 <style>
   @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css');
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  :root, [data-theme="light"] {
-    --bg: #ffffff;
-    --surface: #ffffff;
-    --surface2: #f2f4f6;
-    --surface3: #f9fafb;
-    --border: #e5e8eb;
-    --primary: #5ED7FF;
-    --primary-hover: #2DBFEF;
-    --primary-pressed: #1AA4D4;
-    --primary-dim: rgba(94,215,255,0.10);
-    --primary-soft: #E0F7FF;
-    --green: #5ED7FF;            /* legacy alias → primary */
-    --green-dim: rgba(94,215,255,0.10);
-    --red: #f04452;
-    --red-dim: rgba(240,68,82,0.08);
-    --amber: #ff9d00;
-    --amber-dim: rgba(255,157,0,0.1);
-    --text: #191f28;
-    --text-secondary: #4e5968;
-    --text-tertiary: #8b95a1;
-    --label: #4e5968;
-    --btn-text: #0A2533;
-    --accent-text: #111111;
-    --card-bg: #ffffff;
-    --card-shadow: none;
-  }
-
-  [data-theme="dark"] {
+  :root {
     --bg: #17171c;
     --surface: #1f2026;
     --surface2: #2a2c34;
@@ -67,6 +31,7 @@
     --label: #b0b8c1;
     --btn-text: #0A2533;
     --accent-text: var(--primary);
+    --term: #ffffff;
     --card-bg: #1f2026;
     --card-shadow: none;
   }
@@ -79,12 +44,91 @@
     font-feature-settings: 'tnum';
     letter-spacing: -0.025em;
     min-height: 100vh;
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* App shell: sidebar + main */
+  .app {
+    display: flex;
+    min-height: 100vh;
+  }
+
+
+  .sidebar {
+    background: none;
+    flex-shrink: 0;
+    width: 220px;
+    padding: 28px 16px 24px;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    height: 100vh;
+  }
+  .sidebar-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    margin-bottom: 18px;
+  }
+  .sidebar-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--surface2);
+    flex-shrink: 0;
+  }
+  .sidebar-username {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.025em;
+  }
+  .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .sidebar-link {
+    display: block;
+    padding: 11px 14px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    letter-spacing: -0.025em;
+    user-select: none;
+  }
+  .sidebar-link:hover {
+    background: var(--surface2);
+    color: var(--text);
+  }
+  .sidebar-link.active {
+    background: #2B2C35;
+    color: #fff;
+    font-weight: 600;
+  }
+
+  /* Main area */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .main-inner {
+    flex: 1;
     display: flex;
     align-items: flex-start;
     justify-content: center;
-    padding: 32px 16px 88px;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    padding: 32px 16px 32px;
   }
 
   .card {
@@ -93,6 +137,13 @@
     background: var(--card-bg);
     border-radius: 24px;
     padding: 28px 24px 32px;
+    margin-top: 10px;
+  }
+
+  /* Mobile: hide sidebar */
+  @media (max-width: 720px) {
+    .sidebar { display: none; }
+    .main-inner { padding: 24px 16px 24px; }
   }
 
   /* Top bar */
@@ -240,7 +291,6 @@
     border-color: var(--primary);
     background: var(--surface);
   }
-  [data-theme="light"] input:focus { background: #ffffff; }
   input.error {
     border-color: var(--red);
     background: var(--red-dim);
@@ -300,6 +350,7 @@
 
   /* Loader (uiverse "Generating" style, Toss blue) */
   .loader-wrap {
+    width: 100%;
     margin: 48px auto 0;
     display: flex;
     flex-direction: column;
@@ -383,6 +434,35 @@
     font-weight: 500;
     letter-spacing: -0.025em;
   }
+
+  /* Loading tips */
+  .loading-tip {
+    margin-top: 32px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 18px 20px;
+    background: var(--surface2);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: opacity 0.4s ease;
+  }
+  .loading-tip.fade-out { opacity: 0; }
+  .loading-tip-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent-text);
+    letter-spacing: -0.025em;
+  }
+  .loading-tip-text {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--text);
+    font-weight: 500;
+    letter-spacing: -0.025em;
+  }
+
   .dot-loader {
     display: inline-block;
     margin-left: 1px;
@@ -467,11 +547,10 @@
     letter-spacing: -0.025em;
   }
   #step-list {
-    background: var(--surface3);
+    background: var(--surface2);
     border-radius: 14px;
     padding: 4px 4px;
   }
-  [data-theme="dark"] #step-list { background: var(--surface2); }
   .step-item {
     display: flex;
     gap: 12px;
@@ -503,11 +582,7 @@
     border-radius: 18px;
     padding: 22px 20px;
     background: var(--surface);
-    border: 1px solid #e0e0e0;
-  }
-  [data-theme="dark"] .result {
-    background: var(--surface);
-    border-color: var(--border);
+    border: 1px solid var(--border);
   }
   .result.fail {
     background: var(--red-dim);
@@ -587,11 +662,16 @@
   /* Stock term tooltip */
   .term {
     display: inline;
-    border-bottom: 1px dotted var(--primary);
     cursor: help;
     position: relative;
-    color: var(--accent-text);
-    font-weight: 600;
+    font-weight: 700;
+    color: var(--term);
+    border-bottom: 1px dotted transparent;
+    transition: border-color 0.15s ease;
+  }
+  .term[data-tip]:hover,
+  .term[data-tip]:focus-visible {
+    border-bottom-color: var(--text-tertiary);
   }
   .term[data-tip]:hover::before,
   .term[data-tip]:focus-visible::before {
@@ -704,27 +784,20 @@
   /* Footer */
   .divider {
     height: 1px;
-    background: var(--border);
+    background: var(--surface2);
     margin: 32px 0 0;
   }
-  [data-theme="dark"] .divider { background: var(--surface2); }
   .disclaimer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
     margin: 0;
     padding: 14px 16px calc(14px + env(safe-area-inset-bottom));
     background: var(--bg);
-    border-top: 1px solid var(--border);
+    border-top: 0px solid var(--surface2);
     font-size: 12px;
-    color: var(--text-tertiary);
+    color: #555;
     line-height: 1.55;
     text-align: center;
     letter-spacing: -0.025em;
-    z-index: 10;
   }
-  [data-theme="dark"] .disclaimer { border-top-color: var(--surface2); }
   .restart-link {
     margin-top: 28px;
     font-size: 14px;
@@ -748,6 +821,21 @@
 </head>
 <body>
 
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-user">
+      <div class="sidebar-avatar"></div>
+      <div class="sidebar-username">리딧님</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-link active">홈</div>
+      <div class="sidebar-link">투자기록</div>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <div class="main-inner">
+
 <div class="card">
   <div class="topbar">
     <div class="progress">
@@ -757,7 +845,6 @@
       <div class="dot" id="dot-4"></div>
     </div>
     <div class="topbar-actions">
-      <button class="icon-btn" id="theme-toggle" onclick="toggleTheme()" title="테마 변경">☾</button>
       <button class="icon-btn" onclick="openSettings()" title="API 키 설정">⚙</button>
     </div>
   </div>
@@ -788,6 +875,10 @@
         <div class="loader"></div>
       </div>
       <div class="loader-caption">추천 종목을 고르는 중<span class="dot-loader"><span>.</span><span>.</span><span>.</span></span></div>
+      <div class="loading-tip" id="loading-tip">
+        <div class="loading-tip-label">주린이 TIP</div>
+        <div class="loading-tip-text" id="loading-tip-text"></div>
+      </div>
     </div>
 
     <div id="rec-content" style="display:none;">
@@ -871,7 +962,10 @@
   </div>
 
 </div>
-<p class="disclaimer">AI가 생성한 정보로, 투자 권유가 아닙니다. 최종 투자 결정은 본인의 판단으로 내려주세요.</p>
+    </div>
+    <p class="disclaimer">AI가 생성한 정보로, 투자 권유가 아닙니다. 최종 투자 결정은 본인의 판단으로 내려주세요.</p>
+  </main>
+</div>
 
 <!-- Settings Modal -->
 <div class="modal-overlay" id="settings-modal">
@@ -1181,10 +1275,59 @@ function currencyLabel(currency) {
 
 let recommendations = [];
 
+/* ============== Loading tips ============== */
+const LOADING_TIPS = [
+  "한 종목에 몰빵하지 말고 나눠 사세요. 위험을 분산할 수 있어요.",
+  "처음엔 적은 금액으로 시작하세요. 시장 흐름을 익히는 게 먼저예요.",
+  "장기 투자가 단기 매매보다 평균 수익률이 좋아요.",
+  "주가가 떨어졌다고 바로 손절하지 마세요. 이유부터 확인해보세요.",
+  "PER이 낮다고 무조건 싼 종목은 아니에요. 업종 평균과 비교해보세요.",
+  "배당주는 매년 일정 금액을 받을 수 있어 안정적인 수익원이에요.",
+  "감정적 매매가 가장 큰 손실 원인이에요. 정해진 규칙대로 움직이세요.",
+  "공매도는 주가 하락에 베팅하는 거예요. 초보자에겐 위험해요.",
+  "차트보다 회사의 실적·사업 모델을 먼저 보세요.",
+  "남이 추천한 종목을 그대로 따라 사면 후회하기 쉬워요.",
+  "ETF는 여러 종목을 묶은 상품이라 분산 효과가 자동으로 있어요.",
+  "수익이 났을 때 일부만 익절하는 것도 좋은 전략이에요.",
+  "거래 수수료·세금도 수익률에 영향을 줘요. 한 번 확인해보세요.",
+  "뉴스 헤드라인만 보고 사면 안 돼요. 본문까지 읽어보세요.",
+  "목표 수익률을 미리 정해두면 흔들리지 않을 수 있어요.",
+  "주가는 단기적으론 심리, 장기적으론 실적에 따라 움직여요.",
+  "분기 실적 발표 직전엔 변동성이 커지기 쉬워요.",
+  "투자 일지를 쓰면 같은 실수를 반복하지 않아요.",
+  "대형주는 변동성이 작고, 소형주는 변동성이 커요.",
+  "환율은 미국 주식 수익률에 영향을 줘요. 함께 봐주세요."
+];
+
+let _tipTimer = null;
+
+function startTipRotation() {
+  const el = document.getElementById('loading-tip');
+  const text = document.getElementById('loading-tip-text');
+  if (!el || !text) return;
+  let idx = Math.floor(Math.random() * LOADING_TIPS.length);
+  text.textContent = LOADING_TIPS[idx];
+  el.classList.remove('fade-out');
+  stopTipRotation();
+  _tipTimer = setInterval(() => {
+    el.classList.add('fade-out');
+    setTimeout(() => {
+      idx = (idx + 1) % LOADING_TIPS.length;
+      text.textContent = LOADING_TIPS[idx];
+      el.classList.remove('fade-out');
+    }, 400);
+  }, 4000);
+}
+
+function stopTipRotation() {
+  if (_tipTimer) { clearInterval(_tipTimer); _tipTimer = null; }
+}
+
 async function loadRecommendation() {
   document.getElementById('rec-loading').style.display = 'block';
   document.getElementById('rec-content').style.display = 'none';
   document.getElementById('rec-error').style.display = 'none';
+  startTipRotation();
 
   const profileStr = `성향: ${userProfile.성향} / 목적: ${userProfile.목적} / 관심 업종: ${userProfile.업종}`;
 
@@ -1242,9 +1385,11 @@ async function loadRecommendation() {
       stepList.appendChild(div);
     });
 
+    stopTipRotation();
     document.getElementById('rec-loading').style.display = 'none';
     document.getElementById('rec-content').style.display = 'block';
   } catch (err) {
+    stopTipRotation();
     document.getElementById('rec-loading').style.display = 'none';
     document.getElementById('rec-error').style.display = 'block';
     document.getElementById('rec-error-msg').textContent = getErrorMessage(err);
@@ -1558,7 +1703,52 @@ const TERM_GLOSSARY = {
   '지정가': '원하는 가격을 지정해서 내는 주문',
   '갭상승': '전일 종가보다 높은 가격에 장이 시작되는 것',
   '갭하락': '전일 종가보다 낮은 가격에 장이 시작되는 것',
-  '호가': '사거나 팔 때 제시하는 가격'
+  '호가': '사거나 팔 때 제시하는 가격',
+
+  // 배당·실적 관련
+  '고배당': '주가 대비 배당 비율이 높은 종목·정책',
+  '저배당': '배당 비율이 낮은 종목·정책',
+  '배당수익률': '연간 배당금 ÷ 주가. 배당이 주가의 몇 %인지',
+  '자사주': '회사가 보유한 자기 회사 주식',
+  '자사주 매입': '회사가 자기 주식을 사들이는 것. 보통 주가 부양 효과',
+  '자사주 소각': '회사가 매입한 자사주를 없애 유통 주식 수를 줄이는 것',
+  '영업이익': '본업으로 번 이익 (매출 - 매출원가·판관비)',
+  '매출': '제품·서비스를 팔아서 얻은 총수입',
+  '당기순이익': '모든 비용·세금까지 빼고 남은 최종 이익',
+  '어닝서프라이즈': '실적이 시장 예상보다 크게 잘 나온 경우',
+  '어닝쇼크': '실적이 시장 예상보다 크게 부진한 경우',
+  '흑자': '이익이 발생한 상태',
+  '적자': '손실이 발생한 상태',
+  '분기 실적': '3개월 단위로 발표하는 회사 성과',
+
+  // 차트·기술 분석
+  '이동평균선': '일정 기간 평균 주가를 선으로 이은 차트. 추세 파악용',
+  '이평선': '이동평균선 줄임말',
+  '골든크로스': '단기 이동평균선이 장기선을 위로 뚫는 강세 신호',
+  '데드크로스': '단기 이동평균선이 장기선을 아래로 뚫는 약세 신호',
+  '지지선': '하락하던 주가가 잘 멈추는 가격대',
+  '저항선': '상승하던 주가가 잘 막히는 가격대',
+  '박스권': '일정 가격대 안에서 등락을 반복하는 구간',
+  '매물대': '과거 거래가 많이 쌓인 가격대. 저항·지지 역할',
+  'RSI': '주가 과열·과매도를 0~100으로 보는 지표. 70 이상 과열',
+  'MACD': '단·장기 이동평균 차이로 추세 전환을 보는 지표',
+  '거래량 급증': '평소보다 거래량이 크게 늘어난 상태',
+
+  // 시장 수급
+  '기관': '연기금·자산운용사 등 기관투자자',
+  '외인': '외국인 투자자',
+  '개인': '개인 투자자',
+  '순매수': '산 금액이 판 금액보다 많은 상태',
+  '순매도': '판 금액이 산 금액보다 많은 상태',
+  '수급': '수요(사려는 힘)와 공급(팔려는 힘)의 균형',
+
+  // 평가·전망
+  '목표주가': '증권사가 제시하는 향후 도달 예상 가격',
+  '투자의견': '매수·보유·매도 같은 증권사 의견',
+  '리포트': '증권사 애널리스트가 발행하는 분석 보고서',
+  '밸류에이션': '주가가 적정한지 판단하는 가치 평가',
+  '프리미엄': '비슷한 기업 대비 더 비싸게 거래되는 정도',
+  '디스카운트': '비슷한 기업 대비 더 싸게 거래되는 정도'
 };
 
 function renderTerms(text) {
@@ -1600,22 +1790,6 @@ function restart() {
   showScreen('screen-onboarding', 1);
 }
 
-/* ============== Theme ============== */
-function applyTheme(theme) {
-  document.documentElement.setAttribute('data-theme', theme);
-  const btn = document.getElementById('theme-toggle');
-  if (btn) btn.textContent = theme === 'dark' ? '☾' : '☀';
-}
-
-function toggleTheme() {
-  const cur = document.documentElement.getAttribute('data-theme') || 'dark';
-  const next = cur === 'dark' ? 'light' : 'dark';
-  applyTheme(next);
-  localStorage.setItem('theme', next);
-}
-
-// 초기 테마 적용 (FOUC 방지를 위해 가능한 한 빨리)
-applyTheme(localStorage.getItem('theme') || 'dark');
 
 /* ============== Settings ============== */
 function openSettings() {
