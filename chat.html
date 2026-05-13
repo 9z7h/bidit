@@ -1610,7 +1610,9 @@
 
     <div class="pl-card" id="sell-pl-card">
       <span class="pl-label">실현 예정 손익</span>
-      <span class="pl-value" id="sell-pl-value">—<span class="pl-pct" id="sell-pl-pct"></span></span>
+      <span class="pl-value-wrap">
+        <span class="pl-value" id="sell-pl-value">—</span><span class="pl-pct" id="sell-pl-pct"></span>
+      </span>
     </div>
 
     <div class="info-hint">
@@ -2920,8 +2922,17 @@ let _sellLivePrice = null; // 매도 화면에서 fetch한 현재가
 
 async function goToSell(recordId) {
   const records = getInvestments();
-  const record = records.find((r) => r.id === recordId);
-  if (!record) return;
+  const targetId = Number(recordId);
+  const record = records.find((r) => Number(r.id) === targetId);
+  if (!record) {
+    console.error('[goToSell] 기록을 찾을 수 없음', { recordId, allIds: records.map(r => r.id) });
+    alert('해당 매수 기록을 찾을 수 없어요. 새로고침 후 다시 시도해주세요.');
+    return;
+  }
+  if (record.status === 'sold') {
+    alert('이미 매도된 종목이에요.');
+    return;
+  }
   _currentSellPosition = record;
   _sellLivePrice = null;
 
