@@ -181,9 +181,9 @@
     font-weight: 700;
     line-height: 1.35;
     letter-spacing: -0.025em;
-    color: var(--text);
+    color: #fff;
   }
-  h1 span { color: var(--accent-text); }
+  h1 span { color: #fff; }
   .subtitle {
     margin-top: 10px;
     font-size: 14px;
@@ -823,17 +823,19 @@
     background: var(--surface2);
     border: none;
     border-radius: 12px;
-    padding: 18px 20px;
     color: var(--text);
     font-family: inherit;
+    overflow: hidden;
+  }
+  .rec-head {
+    padding: 18px 20px;
     cursor: pointer;
-    transition: background 0.15s, transform 0.08s;
     display: flex;
     flex-direction: column;
     gap: 8px;
+    transition: background 0.15s;
   }
-  .rec-card:hover { background: var(--primary-soft); }
-  .rec-card:active { transform: scale(0.99); }
+  .rec-head:hover { background: var(--surface3); }
   .rec-row {
     display: flex;
     justify-content: space-between;
@@ -846,10 +848,10 @@
     letter-spacing: -0.025em;
   }
   .rec-price {
-    font-size: 16px;
+    margin-top: 4px;
+    font-size: 18px;
     font-weight: 700;
     color: var(--primary);
-    white-space: nowrap;
     letter-spacing: -0.025em;
     font-feature-settings: 'tnum';
   }
@@ -863,6 +865,62 @@
     color: var(--text-secondary);
     line-height: 1.5;
     letter-spacing: -0.025em;
+  }
+  .rec-chevron {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1;
+    flex-shrink: 0;
+    transition: transform 0.25s ease, background 0.15s, color 0.15s;
+  }
+  .rec-head:hover .rec-chevron { background: #000; color: var(--primary); }
+  .rec-card.expanded .rec-chevron {
+    transform: rotate(180deg);
+    background: var(--primary);
+    color: var(--btn-text);
+  }
+
+  .rec-guide {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    padding: 0 20px;
+  }
+  .rec-card.expanded .rec-guide {
+    max-height: 600px;
+    padding: 4px 20px 20px;
+  }
+  .rec-guide-row {
+    display: flex;
+    gap: 12px;
+    padding: 8px 0;
+    align-items: flex-start;
+  }
+  .rec-guide-label {
+    flex-shrink: 0;
+    width: 48px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    letter-spacing: -0.025em;
+    padding-top: 1px;
+  }
+  .rec-guide-text {
+    flex: 1;
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.55;
+    letter-spacing: -0.025em;
+  }
+  .rec-buy-btn {
+    margin-top: 14px;
   }
 
   .step-guide {
@@ -1016,6 +1074,11 @@
     color: var(--text);
     font-feature-settings: 'tnum';
     letter-spacing: -0.025em;
+  }
+  .krw-conv {
+    color: var(--text-tertiary);
+    font-weight: 500;
+    margin-left: 4px;
   }
   .fb-summary-total {
     font-size: 26px;
@@ -1406,7 +1469,7 @@
       </div>
     </div>
     <h1>당신께 맞는<br><span>이 종목</span>이에요</h1>
-    <p class="subtitle">성향 기반으로 골랐어요. 부담 없는 가상 매수예요.</p>
+    <p class="subtitle">성향 기반으로 골랐어요. 3개 종목 중 하나를 선택해보세요.</p>
 
     <div id="rec-loading" class="loader-wrap">
       <div class="loader-wrapper">
@@ -1493,7 +1556,7 @@
     <div class="qty-error" id="err-qty"></div>
 
     <div class="info-hint">
-      <i class="info-icon" tabindex="0" data-tip="실제 거래가 일어나지 않아요. 매수 결과를 가지고 AI 피드백을 받아볼 수 있어요.">i</i>
+      <i class="info-icon" tabindex="0" data-tip="실제 거래가 일어나지 않아요. 매수 결과를 가지고 투자 가이드을 받아볼 수 있어요.">i</i>
       가상 투자예요. 실제 돈이 오가지 않으니 부담 없이 경험해보세요.
     </div>
 
@@ -1505,7 +1568,7 @@
   <!-- Screen 4: Feedback -->
   <div class="screen" id="screen-feedback">
     <div class="screen-header">
-      <div class="badge">매수 완료 · AI 피드백</div>
+      <div class="badge">매수 완료 · 투자 가이드</div>
       <div class="progress">
         <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
       </div>
@@ -1550,7 +1613,7 @@
         <span class="loader-letter">g</span>
         <div class="loader"></div>
       </div>
-      <div class="loader-caption">피드백 분석 중<span class="dot-loader"><span>.</span><span>.</span><span>.</span></span></div>
+      <div class="loader-caption">투자 가이드 분석 중<span class="dot-loader"><span>.</span><span>.</span><span>.</span></span></div>
     </div>
 
     <div id="fb-result"></div>
@@ -1628,7 +1691,7 @@
   <!-- Screen 7: Sell Feedback -->
   <div class="screen" id="screen-sell-feedback">
     <div class="screen-header">
-      <div class="badge">매도 완료 · AI 피드백</div>
+      <div class="badge">매도 완료 · 투자 가이드</div>
     </div>
     <h1 id="sfb-title"><span>—</span> 매도 완료</h1>
 
@@ -1784,9 +1847,39 @@ const RECOMMEND_SYSTEM = `[01 ROLE]
 [03 OUTPUT FORMAT (반드시 JSON만)]
 {
   "stocks": [
-    { "name": "삼성전자", "code": "005930", "market": "KR", "reason": "반도체 대형주*로 초보자 접근 쉬움" },
-    { "name": "Apple", "code": "AAPL.O", "market": "US", "reason": "변동성* 낮은 미국 대표 기술주*" },
-    { "name": "JPMorgan", "code": "JPM", "market": "US", "reason": "안정적 배당* 주는 미국 금융주*" }
+    {
+      "name": "삼성전자",
+      "code": "005930",
+      "market": "KR",
+      "reason": "반도체 대형주*로 초보자 접근 쉬움",
+      "guide": {
+        "fit": "안정형·IT 입문 모두에 잘 맞아요",
+        "strength": "국내 시가총액* 1위, 거래량* 많아 매매 부담 적음",
+        "caution": "반도체 업황* 사이클에 따라 단기 변동성* 큼"
+      }
+    },
+    {
+      "name": "Apple",
+      "code": "AAPL.O",
+      "market": "US",
+      "reason": "변동성* 낮은 미국 대표 기술주*",
+      "guide": {
+        "fit": "안정적인 미국 대형주* 입문에 적합",
+        "strength": "꾸준한 매출과 자사주 매입*으로 주주 환원 강점",
+        "caution": "환율 변동성*과 고평가* 부담 함께 점검 필요"
+      }
+    },
+    {
+      "name": "JPMorgan",
+      "code": "JPM",
+      "market": "US",
+      "reason": "안정적 배당* 주는 미국 금융주*",
+      "guide": {
+        "fit": "꾸준한 배당* 받고 싶은 안정형 투자자에게 적합",
+        "strength": "미국 최대 은행, 분기 실적*·배당이 안정적",
+        "caution": "금리 인하기엔 순이자마진 압박 가능"
+      }
+    }
   ],
   "steps": [
     "현재가 차트 한 번 보기",
@@ -1801,7 +1894,8 @@ const RECOMMEND_SYSTEM = `[01 ROLE]
 - 3개 중 최소 1개는 한국 주식, 최소 1개는 미국 주식 (가능하면 1:2 또는 2:1 혼합)
 - market 은 "KR"(한국) 또는 "US"(미국)
 - reason 은 단정·과장 금지. 추측 표현 대신 검증된 특성만 언급
-- reason·steps 안에 주린이가 모를 만한 주식 용어는 "용어*" 형식(뒤에 별표 1개)으로 표기. 예: 대형주*, 배당*, 변동성*, PER*
+- guide.fit / guide.strength / guide.caution 은 각 1문장(40자 이내). 주린이 친화 어조, 단정·겁주는 표현 금지
+- reason·steps·guide 안에 주린이가 모를 만한 주식 용어는 "용어*" 형식(뒤에 별표 1개)으로 표기. 예: 대형주*, 배당*, 변동성*, PER*
 
 [05 한국 종목코드 (6자리 숫자)]
 삼성전자 "005930", SK하이닉스 "000660", 카카오 "035720", 네이버 "035420",
@@ -2049,10 +2143,35 @@ async function fetchCurrentPrice(code, market) {
   throw lastErr || new Error('PRICE_ALL_FAILED');
 }
 
+/* ============== USD → KRW 환율 캐시 ============== */
+let _usdKrwRate = null;
+
+async function fetchUsdKrwRate() {
+  if (_usdKrwRate) return _usdKrwRate;
+  try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 8000);
+    const res = await fetch('https://open.er-api.com/v6/latest/USD', { signal: ctrl.signal });
+    clearTimeout(t);
+    if (!res.ok) throw new Error('FX_HTTP');
+    const data = await res.json();
+    const rate = data?.rates?.KRW;
+    if (rate && rate > 0) _usdKrwRate = rate;
+  } catch (e) {}
+  return _usdKrwRate;
+}
+// 앱 시작 시 환율 한 번 받아두기
+fetchUsdKrwRate();
+
 function formatPrice(value, currency) {
   if (value == null) return '';
   if (currency === 'USD') {
-    return '$' + Number(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const usdStr = '$' + Number(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    if (_usdKrwRate) {
+      const krw = Math.round(Number(value) * _usdKrwRate);
+      return usdStr + ' <span class="krw-conv">(약 ' + krw.toLocaleString() + '원)</span>';
+    }
+    return usdStr;
   }
   return Number(value).toLocaleString() + '원';
 }
@@ -2147,19 +2266,35 @@ async function loadRecommendation() {
     const list = document.getElementById('rec-list');
     list.innerHTML = '';
     priced.forEach((s, idx) => {
-      const card = document.createElement('button');
+      const card = document.createElement('div');
       card.className = 'rec-card';
+      card.dataset.idx = idx;
       const priceHtml = s.price
         ? `<div class="rec-price">${formatPrice(s.price, s.currency)}</div>`
         : `<div class="rec-price unavailable">시세 조회 실패</div>`;
+
+      // 가이드 (있을 때만 토글 영역 노출)
+      const g = s.guide && typeof s.guide === 'object' ? s.guide : null;
+      const guideHtml = g ? `
+        <div class="rec-guide" id="rec-guide-${idx}">
+          ${g.fit ? `<div class="rec-guide-row"><span class="rec-guide-label">적합도</span><span class="rec-guide-text">${renderTerms(g.fit)}</span></div>` : ''}
+          ${g.strength ? `<div class="rec-guide-row"><span class="rec-guide-label">강점</span><span class="rec-guide-text">${renderTerms(g.strength)}</span></div>` : ''}
+          ${g.caution ? `<div class="rec-guide-row"><span class="rec-guide-label">주의</span><span class="rec-guide-text">${renderTerms(g.caution)}</span></div>` : ''}
+          <button class="btn rec-buy-btn" onclick="event.stopPropagation(); goToBuy(${idx})">매수하기</button>
+        </div>
+      ` : '';
+
       card.innerHTML = `
-        <div class="rec-row">
-          <div class="rec-name">${escapeHtml(s.name)}</div>
+        <div class="rec-head" onclick="toggleRecGuide(${idx})">
+          <div class="rec-row">
+            <div class="rec-name">${escapeHtml(s.name)}</div>
+            ${g ? '<span class="rec-chevron">▾</span>' : ''}
+          </div>
+          <div class="rec-reason">${renderTerms(s.reason)}</div>
           ${priceHtml}
         </div>
-        <div class="rec-reason">${renderTerms(s.reason)}</div>
+        ${guideHtml}
       `;
-      card.onclick = () => goToBuy(idx);
       list.appendChild(card);
     });
 
@@ -2201,6 +2336,12 @@ function setQtyError(msg) {
   if (el) el.textContent = msg || '';
 }
 
+function toggleRecGuide(idx) {
+  const card = document.querySelector(`.rec-card[data-idx="${idx}"]`);
+  if (!card) return;
+  card.classList.toggle('expanded');
+}
+
 function goToBuy(idx) {
   recommendation = recommendations[idx];
   const r = recommendation;
@@ -2210,7 +2351,7 @@ function goToBuy(idx) {
   // 가격 표시
   const priceEl = document.getElementById('price-display');
   if (r.price != null) {
-    priceEl.textContent = formatPrice(r.price, r.currency);
+    priceEl.innerHTML = formatPrice(r.price, r.currency);
     priceEl.classList.remove('unavail');
   } else {
     priceEl.textContent = '시세 불러오기 실패';
@@ -2324,7 +2465,7 @@ function updateBuyUI(opts = {}) {
     const formatted = formatPrice(total, cur);
     // 통화 단위 분리: 한국은 뒤에 "원", 미국은 앞에 "$"
     if (cur === 'USD') {
-      totalEl.textContent = formatted; // "$298,500.00" — 그냥 전체
+      totalEl.innerHTML = formatted; // "$298,500.00 <span>...</span>" — HTML 그대로
       unitEl.textContent = '';
     } else {
       totalEl.textContent = formatted.replace(/원$/, '');
@@ -2338,7 +2479,7 @@ function updateBuyUI(opts = {}) {
   const btn = document.getElementById('buy-btn');
   const btnText = document.getElementById('buy-btn-text');
   if (price > 0 && _buyQty >= QTY_MIN) {
-    btnText.textContent = `${formatPrice(total, cur)} 가상 매수하기`;
+    btnText.innerHTML = `${formatPrice(total, cur)} 가상 매수하기`;
     btn.disabled = false;
   } else if (price > 0) {
     btnText.textContent = '수량을 입력해주세요';
@@ -2387,8 +2528,8 @@ async function handleBuy() {
   document.getElementById('fb-stockname').textContent = stockName;
   document.getElementById('fb-stockcode').textContent = r.code || '';
   document.getElementById('fb-qty').textContent = qtyDisplay + '주';
-  document.getElementById('fb-price').textContent = formatPrice(price, currency);
-  document.getElementById('fb-total').textContent = formatPrice(price * qty, currency);
+  document.getElementById('fb-price').innerHTML = formatPrice(price, currency);
+  document.getElementById('fb-total').innerHTML = formatPrice(price * qty, currency);
 
   // 등락 상태 칩 (매수 화면과 같은 로직)
   const chip = document.getElementById('fb-status-chip');
@@ -2470,13 +2611,13 @@ function showFeedback(lines) {
 
   // 복사용 텍스트 (종목명 + 3줄, 별표 마커 제거)
   const stockName = recommendation?.name || '';
-  const header = stockName ? `[${stockName}] AI 피드백\n` : 'AI 피드백\n';
+  const header = stockName ? `[${stockName}] 투자 가이드\n` : '투자 가이드\n';
   lastFeedbackCopyText = header + cleaned
     .map((t, i) => `${i + 1}. ${titles[i] || ''}: ${stripTermMarkers(t)}`)
     .join('\n');
 
   document.getElementById('fb-result').innerHTML = `
-    <div class="fb-section-title">AI 피드백</div>
+    <div class="fb-section-title">투자 가이드</div>
     <div class="fb-cards">${cardsHtml}</div>
     <button class="fb-copy-bar" id="fb-copy-btn" onclick="copyFeedback()">
       <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
@@ -2965,14 +3106,14 @@ async function goToSell(recordId) {
   try {
     const info = await fetchCurrentPrice(record.code, record.market === 'US' ? 'US' : 'KR');
     _sellLivePrice = info.price;
-    document.getElementById('sell-current-price').textContent = formatPrice(info.price, record.currency);
+    document.getElementById('sell-current-price').innerHTML = formatPrice(info.price, record.currency);
     // 등락
     applySellChangeDisplay(info, record.currency);
     applySellStatusChip(info);
     // 손익 계산
     updateSellPL(info.price);
     // CTA 활성화
-    document.getElementById('sell-btn-text').textContent = `${formatPrice(info.price * record.qty, record.currency)}에 매도하기`;
+    document.getElementById('sell-btn-text').innerHTML = `${formatPrice(info.price * record.qty, record.currency)}에 매도하기`;
     btn.disabled = false;
   } catch (e) {
     document.getElementById('sell-current-price').textContent = '시세 불러오기 실패';
@@ -2991,7 +3132,7 @@ function applySellChangeDisplay(info, currency) {
     return;
   }
   const sign = amt > 0 ? '+' : (amt < 0 ? '-' : '');
-  el.textContent = `${sign}${formatPrice(Math.abs(amt), currency)} (${pct > 0 ? '+' : ''}${pct.toFixed(2)}%)`;
+  el.innerHTML = `${sign}${formatPrice(Math.abs(amt), currency)} (${pct > 0 ? '+' : ''}${pct.toFixed(2)}%)`;
   if (pct > 0) el.classList.add('up');
   else if (pct < 0) el.classList.add('down');
 }
@@ -3015,7 +3156,7 @@ function updateSellPL(currentPrice) {
   const pctEl = document.getElementById('sell-pl-pct');
   const card = document.getElementById('sell-pl-card');
   const sign = pl > 0 ? '+' : (pl < 0 ? '-' : '');
-  valueEl.textContent = `${sign}${formatPrice(Math.abs(pl), r.currency)}`;
+  valueEl.innerHTML = `${sign}${formatPrice(Math.abs(pl), r.currency)}`;
   pctEl.textContent = ` (${pl > 0 ? '+' : ''}${plPct.toFixed(2)}%)`;
   valueEl.classList.remove('up', 'down');
   card.classList.remove('up', 'down');
@@ -3038,11 +3179,11 @@ async function handleSell() {
   document.getElementById('sfb-title').innerHTML = `<span>${escapeHtml(r.name)}</span> 매도 완료`;
   document.getElementById('sfb-stockname').textContent = r.name;
   document.getElementById('sfb-stockcode').textContent = r.code || '';
-  document.getElementById('sfb-buy-price').textContent = formatPrice(r.price, r.currency);
-  document.getElementById('sfb-sell-price').textContent = formatPrice(sellPrice, r.currency);
+  document.getElementById('sfb-buy-price').innerHTML = formatPrice(r.price, r.currency);
+  document.getElementById('sfb-sell-price').innerHTML = formatPrice(sellPrice, r.currency);
   const totalEl = document.getElementById('sfb-pl');
   const sign = pl > 0 ? '+' : (pl < 0 ? '-' : '');
-  totalEl.textContent = `${sign}${formatPrice(Math.abs(pl), r.currency)} (${pl > 0 ? '+' : ''}${plPct.toFixed(2)}%)`;
+  totalEl.innerHTML = `${sign}${formatPrice(Math.abs(pl), r.currency)} (${pl > 0 ? '+' : ''}${plPct.toFixed(2)}%)`;
   totalEl.style.color = pl > 0 ? 'var(--red)' : (pl < 0 ? 'var(--primary)' : 'var(--text)');
 
   document.getElementById('sfb-summary-card').style.display = 'block';
@@ -3050,7 +3191,7 @@ async function handleSell() {
   document.getElementById('sfb-result').innerHTML = '';
   showScreen('screen-sell-feedback', 0);
 
-  // AI 매도 피드백 호출
+  // 매도 가이드 호출
   const cur = r.currency || 'KRW';
   const priceLabel = (v) => cur === 'USD' ? `$${v}` : `${v}원`;
   const userMsg = `종목명: ${r.name} / 매수가: ${priceLabel(r.price)} × ${formatQty(qty)}주 / 매도가: ${priceLabel(sellPrice)} × ${formatQty(qty)}주 / 보유기간: ${holdingDays}일 / 손익: ${sign}${priceLabel(Math.abs(pl))} (${pl > 0 ? '+' : ''}${plPct.toFixed(2)}%)`;
@@ -3112,7 +3253,7 @@ function renderSellFeedback(lines) {
     .join('\n');
 
   document.getElementById('sfb-result').innerHTML = `
-    <div class="fb-section-title">AI 매도 피드백</div>
+    <div class="fb-section-title">매도 가이드</div>
     <div class="fb-cards">${cardsHtml}</div>
     <button class="fb-copy-bar" id="sfb-copy-btn" onclick="copySellFeedback()">
       <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
