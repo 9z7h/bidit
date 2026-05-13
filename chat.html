@@ -56,65 +56,32 @@
   }
 
 
-  .sidebar {
-    background: none;
-    flex-shrink: 0;
-    width: 220px;
-    padding: 28px 16px 24px;
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    position: sticky;
-    top: 0;
-    align-self: flex-start;
-    height: 100vh;
-  }
-  .sidebar-user {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    margin-bottom: 18px;
-  }
-  .sidebar-avatar {
-    width: 32px; height: 32px;
-    border-radius: 50%;
+  /* Top tab toggle (탭바) */
+  .tab-toggle {
+    display: inline-flex;
     background: var(--surface2);
-    flex-shrink: 0;
-  }
-  .sidebar-username {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text);
-    letter-spacing: -0.025em;
-  }
-  .sidebar-nav {
-    display: flex;
-    flex-direction: column;
+    border-radius: 999px;
+    padding: 4px;
     gap: 2px;
+    margin-bottom: 10px;
   }
-  .sidebar-link {
-    display: block;
-    padding: 11px 14px;
-    border-radius: 10px;
-    margin-top: 4px;
-    font-size: 14px;
-    font-weight: 500;
+  .tab-btn {
+    border: none;
+    background: transparent;
+    padding: 8px 18px;
+    border-radius: 999px;
     color: var(--text-secondary);
-    cursor: pointer;
-    transition: background 0.15s, color 0.15s;
-    letter-spacing: -0.025em;
-    user-select: none;
-  }
-  .sidebar-link:hover {
-    background: var(--surface2);
-    color: var(--text);
-  }
-  .sidebar-link.active {
-    background: #2B2C35;
-    color: #fff;
     font-weight: 600;
+    font-size: 14px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s;
+    letter-spacing: -0.025em;
+  }
+  .tab-btn:hover:not(.active) { color: var(--text); }
+  .tab-btn.active {
+    background: var(--bg);
+    color: var(--text);
   }
 
   /* Main area */
@@ -137,13 +104,11 @@
     max-width: 480px;
     background: var(--card-bg);
     border-radius: 24px;
-    padding: 28px 24px 32px;
+    padding: 32px 28px 40px;
     margin-top: 10px;
   }
 
-  /* Mobile: hide sidebar */
   @media (max-width: 720px) {
-    .sidebar { display: none; }
     .main-inner { padding: 24px 16px 24px; }
   }
 
@@ -152,13 +117,27 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 32px;
+    margin-bottom: 18px;
   }
   .progress {
     display: flex;
     gap: 6px;
   }
+  .screen-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .screen-header .badge {
+    margin-bottom: 0;
+  }
+  .screen-header .progress {
+    margin-left: auto;
+  }
   .dot {
+    margin-bottom: 8px;
     width: 24px; height: 4px;
     background: var(--surface2);
     border-radius: 999px;
@@ -369,10 +348,10 @@
   }
 
   .stock-card {
-    margin-top: 24px;
+    margin-top: 28px;
     background: var(--surface2);
     border-radius: 12px;
-    padding: 20px;
+    padding: 22px 22px 24px;
   }
   .stock-card-head {
     display: flex;
@@ -407,8 +386,8 @@
 
   .stock-card-divider {
     height: 1px;
-    background: var(--bg);
-    margin: 18px 0;
+    background: #353535;
+    margin: 22px 0;
   }
   .stock-row {
     display: flex;
@@ -431,13 +410,13 @@
   .stock-row-value.unavail { color: var(--text-tertiary); font-weight: 500; }
 
   .qty-card {
-    margin-top: 12px;
+    margin-top: 14px;
     background: var(--surface2);
     border-radius: 12px;
-    padding: 20px;
+    padding: 22px;
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 20px;
   }
   .qty-card-label {
     font-size: 14px;
@@ -518,10 +497,10 @@
   }
 
   .total-card {
-    margin-top: 12px;
+    margin-top: 14px;
     background: var(--primary-dim);
     border-radius: 12px;
-    padding: 18px 20px;
+    padding: 20px 22px;
     display: flex;
     justify-content: space-between;
     align-items: baseline;
@@ -549,7 +528,8 @@
     display: flex;
     align-items: flex-start;
     gap: 8px;
-    margin-top: 14px;
+    margin-top: 10px;
+    margin-bottom: 4px;
     font-size: 14px;
     color: var(--text-tertiary);
     line-height: 1.55;
@@ -567,6 +547,89 @@
     color: var(--red);
     text-align: center;
     min-height: 18px;
+  }
+
+  /* Profit/Loss display (매도 화면, 매도 결과) */
+  .pl-card {
+    margin-top: 14px;
+    background: var(--surface2);
+    border-radius: 12px;
+    padding: 20px 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+  }
+  .pl-card.up { background: var(--red-dim); }
+  .pl-card.down { background: var(--primary-soft); }
+  .pl-label {
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+  .pl-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    font-feature-settings: 'tnum';
+    letter-spacing: -0.025em;
+  }
+  .pl-value.up { color: var(--red); }
+  .pl-value.down { color: var(--primary); }
+  .pl-pct {
+    font-size: 14px;
+    font-weight: 600;
+    margin-left: 6px;
+  }
+
+  /* History item — holding vs sold */
+  .history-item-status {
+    font-size: 14px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+    margin-bottom: 10px;
+    display: inline-block;
+    align-self: flex-start;
+  }
+  .history-item-status.holding {
+    color: var(--primary);
+    background: var(--primary-soft);
+  }
+  .history-item-status.sold {
+    color: var(--text-tertiary);
+    background: var(--bg);
+  }
+  .history-item-pl {
+    font-size: 14px;
+    font-weight: 600;
+    font-feature-settings: 'tnum';
+  }
+  .history-item-pl.up { color: var(--red); }
+  .history-item-pl.down { color: var(--primary); }
+  .history-sell-btn {
+    margin-top: 6px;
+    width: 100%;
+    background: var(--bg);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 11px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    letter-spacing: -0.025em;
+    transition: background 0.15s;
+  }
+  .history-sell-btn:hover {
+    background: #000;
+  }
+  .history-item-detail {
+    margin-top: 4px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-feature-settings: 'tnum';
   }
 
   /* Buttons */
@@ -928,23 +991,23 @@
 
   /* Feedback summary card (매수 결과 요약) */
   .fb-summary-card {
-    margin-top: 24px;
+    margin-top: 28px;
     background: var(--surface2);
     border-radius: 12px;
-    padding: 20px;
+    padding: 24px 22px 26px;
   }
   .fb-summary-card .stock-card-divider {
-    background: var(--bg);
+    background: #353535;
   }
   .fb-summary-cols {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    gap: 20px;
   }
   .fb-summary-label {
     font-size: 14px;
     color: var(--text-secondary);
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     letter-spacing: -0.025em;
   }
   .fb-summary-value {
@@ -964,8 +1027,8 @@
 
   /* Feedback section header */
   .fb-section-title {
-    margin-top: 32px;
-    margin-bottom: 12px;
+    margin-top: 40px;
+    margin-bottom: 16px;
     font-size: 16px;
     font-weight: 700;
     color: var(--text);
@@ -976,14 +1039,14 @@
   .fb-cards {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
   }
   .fb-card {
     background: var(--surface2);
     border-radius: 12px;
-    padding: 16px 18px;
+    padding: 20px 22px;
     display: flex;
-    gap: 14px;
+    gap: 16px;
     align-items: flex-start;
   }
   .fb-icon {
@@ -1003,11 +1066,11 @@
     stroke-linejoin: round;
     fill: none;
   }
-  .fb-icon.kind-status { background: var(--primary-soft); }
+  .fb-icon.kind-status { background: #17171c; }
   .fb-icon.kind-status svg { stroke: var(--primary); }
-  .fb-icon.kind-risk { background: var(--amber-dim); }
+  .fb-icon.kind-risk { background: #17171c; }
   .fb-icon.kind-risk svg { stroke: var(--amber); }
-  .fb-icon.kind-action { background: rgba(110, 231, 183, 0.18); }
+  .fb-icon.kind-action { background: #17171c; }
   .fb-icon.kind-action svg { stroke: #6ee7b7; }
 
   .fb-card-body { flex: 1; min-width: 0; }
@@ -1028,12 +1091,12 @@
 
   /* Full-width copy button at bottom */
   .fb-copy-bar {
-    margin-top: 16px;
+    margin-top: 24px;
     width: 100%;
     background: var(--surface2);
     border: none;
     border-radius: 12px;
-    padding: 16px;
+    padding: 18px;
     color: var(--text-secondary);
     font-family: inherit;
     font-size: 15px;
@@ -1105,6 +1168,22 @@
     color: var(--text-secondary);
     line-height: 1.5;
   }
+  .history-item-current {
+    margin-top: 4px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-feature-settings: 'tnum';
+    letter-spacing: -0.025em;
+  }
+  .history-item-current.unavail {
+    color: var(--text-tertiary);
+  }
+  .history-item-current .pnl {
+    font-weight: 600;
+    margin-left: 4px;
+  }
+  .history-item-current .pnl.up { color: var(--red); }
+  .history-item-current .pnl.down { color: var(--primary); }
   .history-empty {
     margin-top: 60px;
     text-align: center;
@@ -1253,7 +1332,7 @@
   /* Footer */
   .divider {
     height: 1px;
-    background: var(--surface2);
+    background: #353535;
     margin: 32px 0 0;
   }
   .disclaimer {
@@ -1291,27 +1370,14 @@
 <body>
 
 <div class="app">
-  <aside class="sidebar">
-    <div class="sidebar-user">
-      <div class="sidebar-avatar"></div>
-      <div class="sidebar-username">리딧님</div>
-    </div>
-    <nav class="sidebar-nav">
-      <div class="sidebar-link active" data-nav="home" onclick="navHome()">홈</div>
-      <div class="sidebar-link" data-nav="history" onclick="navHistory()">투자기록</div>
-    </nav>
-  </aside>
-
   <main class="main">
     <div class="main-inner">
 
 <div class="card">
   <div class="topbar">
-    <div class="progress">
-      <div class="dot" id="dot-1"></div>
-      <div class="dot" id="dot-2"></div>
-      <div class="dot" id="dot-3"></div>
-      <div class="dot" id="dot-4"></div>
+    <div class="tab-toggle">
+      <button type="button" class="tab-btn active" data-nav="home" onclick="navHome()">투자</button>
+      <button type="button" class="tab-btn" data-nav="history" onclick="navHistory()">투자내역</button>
     </div>
     <div class="topbar-actions">
       <button class="icon-btn" onclick="openSettings()" title="API 키 설정">⚙</button>
@@ -1320,7 +1386,12 @@
 
   <!-- Screen 1: Onboarding -->
   <div class="screen active" id="screen-onboarding">
-    <div class="badge">STEP <span id="ob-step">1</span> / 3</div>
+    <div class="screen-header">
+      <div class="badge">STEP <span id="ob-step">1</span> / 3</div>
+      <div class="progress">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      </div>
+    </div>
     <h1 id="ob-question">투자 성향이<br><span>어떤가요?</span></h1>
     <p class="subtitle" id="ob-subtitle">손실에 어떻게 반응하는지 알려주세요.</p>
     <div class="choice-list" id="ob-choices"></div>
@@ -1328,7 +1399,12 @@
 
   <!-- Screen 2: Recommendation -->
   <div class="screen" id="screen-recommend">
-    <div class="badge">오늘의 추천</div>
+    <div class="screen-header">
+      <div class="badge">오늘의 추천</div>
+      <div class="progress">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      </div>
+    </div>
     <h1>당신께 맞는<br><span>이 종목</span>이에요</h1>
     <p class="subtitle">성향 기반으로 골랐어요. 부담 없는 가상 매수예요.</p>
 
@@ -1428,7 +1504,12 @@
 
   <!-- Screen 4: Feedback -->
   <div class="screen" id="screen-feedback">
-    <div class="badge">매수 완료 · AI 피드백</div>
+    <div class="screen-header">
+      <div class="badge">매수 완료 · AI 피드백</div>
+      <div class="progress">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      </div>
+    </div>
     <h1 id="fb-title"><span>—</span> 매수 완료</h1>
 
     <!-- 매수 요약 카드 (가상 매수가 완료된 종목 + 수량 + 총액) -->
@@ -1480,6 +1561,122 @@
         <polyline points="3 4 3 9 8 9"></polyline>
       </svg>
       처음부터 다시 시작하기
+    </div>
+  </div>
+
+  <!-- Screen 6: Sell -->
+  <div class="screen" id="screen-sell">
+    <div class="back-link" onclick="navHistory()">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      투자 기록으로
+    </div>
+    <h1>매도하기</h1>
+    <p class="subtitle">가상 매도예요. 손익을 미리 확인해 보세요.</p>
+
+    <div class="stock-card">
+      <div class="stock-card-head">
+        <div>
+          <div class="stock-name" id="sell-stockname">—</div>
+          <div class="stock-code" id="sell-stockcode"></div>
+        </div>
+        <div class="status-chip flat" id="sell-status-chip">—</div>
+      </div>
+      <div class="stock-card-divider"></div>
+      <div class="stock-row">
+        <span class="stock-row-label">현재가</span>
+        <span class="stock-row-value" id="sell-current-price">—</span>
+      </div>
+      <div class="stock-row">
+        <span class="stock-row-label">전일대비</span>
+        <span class="stock-row-value change" id="sell-change-display">—</span>
+      </div>
+    </div>
+
+    <div class="qty-card">
+      <div class="qty-card-label">보유 내역</div>
+      <div class="stock-row">
+        <span class="stock-row-label">매수가</span>
+        <span class="stock-row-value" id="sell-buy-price">—</span>
+      </div>
+      <div class="stock-row">
+        <span class="stock-row-label">매수 수량</span>
+        <span class="stock-row-value" id="sell-buy-qty">—</span>
+      </div>
+      <div class="stock-row">
+        <span class="stock-row-label">매수일</span>
+        <span class="stock-row-value" id="sell-buy-date">—</span>
+      </div>
+    </div>
+
+    <div class="pl-card" id="sell-pl-card">
+      <span class="pl-label">실현 예정 손익</span>
+      <span class="pl-value" id="sell-pl-value">—<span class="pl-pct" id="sell-pl-pct"></span></span>
+    </div>
+
+    <div class="info-hint">
+      <i class="info-icon" tabindex="0" data-tip="매도하면 보유 상태가 종료되고 손익이 확정돼요. (가상 거래)">i</i>
+      매도하면 보유 종료로 기록돼요. 이후엔 매도 결과 피드백을 받아볼 수 있어요.
+    </div>
+
+    <button class="btn" id="sell-btn" onclick="handleSell()" disabled>
+      <span id="sell-btn-text">매도하기</span>
+    </button>
+  </div>
+
+  <!-- Screen 7: Sell Feedback -->
+  <div class="screen" id="screen-sell-feedback">
+    <div class="screen-header">
+      <div class="badge">매도 완료 · AI 피드백</div>
+    </div>
+    <h1 id="sfb-title"><span>—</span> 매도 완료</h1>
+
+    <div class="fb-summary-card" id="sfb-summary-card" style="display:none;">
+      <div class="stock-card-head">
+        <div>
+          <div class="stock-name" id="sfb-stockname">—</div>
+          <div class="stock-code" id="sfb-stockcode"></div>
+        </div>
+      </div>
+      <div class="stock-card-divider"></div>
+      <div class="fb-summary-cols">
+        <div class="fb-summary-col">
+          <div class="fb-summary-label">매수가</div>
+          <div class="fb-summary-value" id="sfb-buy-price">—</div>
+        </div>
+        <div class="fb-summary-col">
+          <div class="fb-summary-label">매도가</div>
+          <div class="fb-summary-value" id="sfb-sell-price">—</div>
+        </div>
+      </div>
+      <div class="stock-card-divider"></div>
+      <div>
+        <div class="fb-summary-label">실현 손익</div>
+        <div class="fb-summary-total" id="sfb-pl">—</div>
+      </div>
+    </div>
+
+    <div id="sfb-loading" class="loader-wrap">
+      <div class="loader-wrapper">
+        <span class="loader-letter">L</span>
+        <span class="loader-letter">o</span>
+        <span class="loader-letter">a</span>
+        <span class="loader-letter">d</span>
+        <span class="loader-letter">i</span>
+        <span class="loader-letter">n</span>
+        <span class="loader-letter">g</span>
+        <div class="loader"></div>
+      </div>
+      <div class="loader-caption">매도 결과 분석 중<span class="dot-loader"><span>.</span><span>.</span><span>.</span></span></div>
+    </div>
+
+    <div id="sfb-result"></div>
+
+    <div class="restart-link" onclick="navHistory()" style="margin-top:24px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 12a9 9 0 1 0 3-6.7"></path>
+        <polyline points="3 4 3 9 8 9"></polyline>
+      </svg>
+      투자 기록으로 돌아가기
     </div>
   </div>
 
@@ -1637,6 +1834,45 @@ LG화학 "051910", 삼성SDI "006400", LG에너지솔루션 "373220",
 - steps 는 반드시 3개. 어떤 종목에도 적용되는 일반적 행동 (예: "현재가 차트 한 번 보기")
 - steps 는 매수 권유 표현 금지 ("지금 사세요" 등). 확인·점검 행동 중심으로`;
 
+const SELL_FEEDBACK_SYSTEM = `[01 ROLE]
+너는 주린이를 위한 매도 피드백 코치다.
+이익이든 손실이든 학습 기회로 차분하게 짚어준다.
+중요: 출력 3줄 안에 주린이가 모를 만한 주식 용어는 반드시 "용어*" 형식(뒤에 별표 1개)으로 표기한다. 최소 2개 이상의 용어에 별표를 붙여라.
+
+[02 TASK]
+<input> 안의 종목·매수가·매도가·보유 기간·실현 손익을 보고 매도 결정에 대한 3줄 피드백을 만들어줘.
+
+[03 OUTPUT FORMAT]
+- 정확히 3줄. 한 줄씩 대시(-)로 시작
+- 1줄: 매도 결과 요약 (이익/손실 규모 + 그 의미)
+- 2줄: 이번 매도에서 배울 점 또는 잘한 점
+- 3줄: 다음 투자 액션 한 가지
+- 각 줄은 50자 이내 (라벨·접두어 붙이지 말 것)
+- 출력 금지 — 인사말·코드블록·이모티콘·줄 외 부가 텍스트
+
+[04 RULES]
+- 확실하지 않은 사실은 만들어 내지 마라
+- 단정·과장·겁주는 표현 금지
+- 손실이라도 비난·자책 톤 금지, 차분한 학습 톤 유지
+- 주린이가 이해할 수 있는 쉬운 말로
+
+[05 EXAMPLES]
+입력 — 종목: 삼성전자 / 매수가: 70,000원 × 10주 / 매도가: 75,000원 × 10주 / 보유기간: 30일 / 손익: +50,000원 (+7.14%)
+출력
+- 30일 만에 +7.14% 수익 실현, 안정적인 단기* 매매였어요
+- 변동성* 큰 구간 전에 정리한 좋은 타이밍 결정
+- 다음엔 분할 매도* 방식도 시도해 보면 좋아요
+
+입력 — 종목: 카카오 / 매수가: 42,000원 × 5주 / 매도가: 38,000원 × 5주 / 보유기간: 15일 / 손익: -20,000원 (-9.52%)
+출력
+- 손절* 결정, 단기 -9.52% 손실 확정
+- 빠른 손절은 큰 손실을 막는 좋은 습관*이에요
+- 다음 매수 전 손절가를 미리 정해보세요
+
+[06 EDGE CASES]
+- 응답 형식 이상(3줄 미만·초과) → 반드시 3줄로 재구성
+- 입력 손익 금액 크기에 대한 자체 판단 금지: 어떤 입력이든 3줄 피드백을 그대로 생성할 것`;
+
 /* ============== State ============== */
 const ONBOARDING = [
   {
@@ -1728,10 +1964,12 @@ function getErrorMessage(err) {
 /* ============== Screen control ============== */
 function showScreen(id, dotIdx) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  for (let i = 1; i <= 4; i++) {
-    document.getElementById('dot-' + i).classList.toggle('active', i <= dotIdx);
-  }
+  const screen = document.getElementById(id);
+  screen.classList.add('active');
+  // 활성 스크린 안의 .dot 요소들만 업데이트 (없으면 패스)
+  screen.querySelectorAll('.progress .dot').forEach((d, i) => {
+    d.classList.toggle('active', i < (dotIdx || 0));
+  });
   window.scrollTo(0, 0);
 }
 
@@ -2249,6 +2487,7 @@ function showFeedback(lines) {
     id: Date.now(),
     date: new Date().toISOString(),
     name: recommendation?.name || '',
+    code: recommendation?.code || '',
     market: recommendation?.market || '',
     currency: recommendation?.currency || 'KRW',
     price: recommendation?.price ?? null,
@@ -2511,9 +2750,19 @@ function getInvestments() {
 function saveInvestment(record) {
   try {
     const all = getInvestments();
-    all.push(record);
+    all.push({ status: 'holding', ...record });
     const trimmed = all.slice(-HISTORY_LIMIT);
     localStorage.setItem(HISTORY_KEY, JSON.stringify(trimmed));
+  } catch (e) {}
+}
+
+function updateInvestment(id, updates) {
+  try {
+    const all = getInvestments();
+    const idx = all.findIndex((r) => r.id === id);
+    if (idx < 0) return;
+    all[idx] = { ...all[idx], ...updates };
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(all));
   } catch (e) {}
 }
 
@@ -2556,27 +2805,86 @@ function renderHistory() {
   clearBtn.style.display = 'block';
 
   listEl.innerHTML = list.map((r) => {
-    const total = (r.price || 0) * (r.qty || 0);
+    const status = r.status || 'holding';
+    const buyTotal = (r.price || 0) * (r.qty || 0);
     const qtyDisp = formatQty(r.qty);
-    const totalStr = formatPrice(total, r.currency);
-    const priceStr = r.price != null ? formatPrice(r.price, r.currency) : '시세 불명';
-    const firstFb = (r.feedback || [])[0] || '';
+    const buyTotalStr = formatPrice(buyTotal, r.currency);
+    const buyPriceStr = r.price != null ? formatPrice(r.price, r.currency) : '시세 불명';
+
+    if (status === 'sold') {
+      const sellTotal = (r.sell_price || 0) * (r.sell_qty || r.qty || 0);
+      const sellPriceStr = r.sell_price != null ? formatPrice(r.sell_price, r.currency) : '—';
+      const pl = sellTotal - buyTotal;
+      const plPct = buyTotal > 0 ? (pl / buyTotal) * 100 : 0;
+      const plUp = pl > 0;
+      const plDown = pl < 0;
+      const plSign = plUp ? '+' : (plDown ? '-' : '');
+      const plClass = plUp ? 'up' : (plDown ? 'down' : '');
+      return `
+        <div class="history-item">
+          <span class="history-item-status sold">매도 완료</span>
+          <div class="history-item-head">
+            <div class="history-item-name">${escapeHtml(r.name || '—')}</div>
+            <div class="history-item-date">${formatHistoryDate(r.sell_date || r.date)}</div>
+          </div>
+          <div class="history-item-detail">매수 ${buyPriceStr} → 매도 ${sellPriceStr} (${qtyDisp}주)</div>
+          <div class="history-item-pl ${plClass}">
+            실현 손익 ${plSign}${formatPrice(Math.abs(pl), r.currency)} (${plSign}${plPct.toFixed(2)}%)
+          </div>
+        </div>
+      `;
+    }
+
+    // holding
     return `
-      <div class="history-item">
+      <div class="history-item" data-record-id="${r.id}">
+        <span class="history-item-status holding">보유중</span>
         <div class="history-item-head">
           <div class="history-item-name">${escapeHtml(r.name || '—')}</div>
           <div class="history-item-date">${formatHistoryDate(r.date)}</div>
         </div>
-        <div class="history-item-meta">${priceStr} × ${qtyDisp}주 = <strong>${totalStr}</strong></div>
-        ${firstFb ? `<div class="history-item-fb">${renderTerms(firstFb)}</div>` : ''}
+        <div class="history-item-meta">${buyPriceStr} × ${qtyDisp}주 = <strong>${buyTotalStr}</strong></div>
+        <div class="history-item-current" data-current>현재가 불러오는 중…</div>
+        <button class="history-sell-btn" onclick="goToSell(${r.id})">매도하기</button>
       </div>
     `;
   }).join('');
+
+  // 보유중 항목에 대해 현재가 비동기로 채움
+  refreshHoldingsCurrentPrices();
 }
 
-/* ============== Sidebar navigation ============== */
+async function refreshHoldingsCurrentPrices() {
+  const all = getInvestments();
+  const items = document.querySelectorAll('.history-item[data-record-id]');
+  for (const el of items) {
+    const id = Number(el.dataset.recordId);
+    const r = all.find((x) => x.id === id);
+    if (!r || (r.status && r.status !== 'holding')) continue;
+    const cell = el.querySelector('[data-current]');
+    if (!cell) continue;
+    if (!r.code || r.price == null) {
+      cell.textContent = '현재가 확인 불가';
+      cell.classList.add('unavail');
+      continue;
+    }
+    try {
+      const info = await fetchCurrentPrice(r.code, r.market === 'US' ? 'US' : 'KR');
+      const diff = info.price - r.price;
+      const diffPct = r.price > 0 ? (diff / r.price) * 100 : 0;
+      const sign = diff > 0 ? '+' : (diff < 0 ? '-' : '');
+      const cls = diff > 0 ? 'up' : (diff < 0 ? 'down' : '');
+      cell.innerHTML = `현재가 ${formatPrice(info.price, r.currency)} <span class="pnl ${cls}">${sign}${formatPrice(Math.abs(diff), r.currency)} (${diff > 0 ? '+' : ''}${diffPct.toFixed(2)}%)</span>`;
+    } catch (e) {
+      cell.textContent = '현재가 확인 불가';
+      cell.classList.add('unavail');
+    }
+  }
+}
+
+/* ============== Tab navigation ============== */
 function setActiveSidebar(key) {
-  document.querySelectorAll('.sidebar-link').forEach((el) => {
+  document.querySelectorAll('.tab-btn').forEach((el) => {
     el.classList.toggle('active', el.dataset.nav === key);
   });
 }
@@ -2597,13 +2905,233 @@ function navHome() {
     'screen-feedback': 4
   };
   let target = _viewBeforeHistory;
-  if (!target || target === 'screen-history') {
+  if (!target || target === 'screen-history' || target === 'screen-sell' || target === 'screen-sell-feedback') {
     if (recommendations.length > 0) target = 'screen-recommend';
     else target = 'screen-onboarding';
   }
   showScreen(target, dotMap[target] || 1);
   setActiveSidebar('home');
   _viewBeforeHistory = null;
+}
+
+/* ============== Sell flow ============== */
+let _currentSellPosition = null;
+let _sellLivePrice = null; // 매도 화면에서 fetch한 현재가
+
+async function goToSell(recordId) {
+  const records = getInvestments();
+  const record = records.find((r) => r.id === recordId);
+  if (!record) return;
+  _currentSellPosition = record;
+  _sellLivePrice = null;
+
+  document.getElementById('sell-stockname').textContent = record.name || '—';
+  document.getElementById('sell-stockcode').textContent = record.code || '';
+  document.getElementById('sell-buy-price').textContent =
+    record.price != null ? formatPrice(record.price, record.currency) : '—';
+  document.getElementById('sell-buy-qty').textContent = formatQty(record.qty) + '주';
+  document.getElementById('sell-buy-date').textContent = formatHistoryDate(record.date);
+
+  // 현재가/등락 placeholder
+  document.getElementById('sell-current-price').textContent = '불러오는 중…';
+  document.getElementById('sell-change-display').textContent = '—';
+  const chip = document.getElementById('sell-status-chip');
+  chip.textContent = '—';
+  chip.classList.remove('up', 'down', 'flat');
+  chip.classList.add('flat');
+
+  const btn = document.getElementById('sell-btn');
+  btn.disabled = true;
+  document.getElementById('sell-btn-text').textContent = '시세 불러오는 중...';
+  document.getElementById('sell-pl-value').textContent = '—';
+  document.getElementById('sell-pl-pct').textContent = '';
+  document.getElementById('sell-pl-card').classList.remove('up', 'down');
+
+  showScreen('screen-sell', 0);
+  setActiveSidebar('history');
+
+  // 현재가 fetch
+  try {
+    const info = await fetchCurrentPrice(record.code, record.market === 'US' ? 'US' : 'KR');
+    _sellLivePrice = info.price;
+    document.getElementById('sell-current-price').textContent = formatPrice(info.price, record.currency);
+    // 등락
+    applySellChangeDisplay(info, record.currency);
+    applySellStatusChip(info);
+    // 손익 계산
+    updateSellPL(info.price);
+    // CTA 활성화
+    document.getElementById('sell-btn-text').textContent = `${formatPrice(info.price * record.qty, record.currency)}에 매도하기`;
+    btn.disabled = false;
+  } catch (e) {
+    document.getElementById('sell-current-price').textContent = '시세 불러오기 실패';
+    document.getElementById('sell-btn-text').textContent = '시세 불러오기 실패';
+  }
+}
+
+function applySellChangeDisplay(info, currency) {
+  const el = document.getElementById('sell-change-display');
+  el.classList.remove('up', 'down', 'unavail');
+  const pct = info.change_rate_pct;
+  const amt = info.change_amount;
+  if (pct == null || amt == null) {
+    el.textContent = '확인 불가';
+    el.classList.add('unavail');
+    return;
+  }
+  const sign = amt > 0 ? '+' : (amt < 0 ? '-' : '');
+  el.textContent = `${sign}${formatPrice(Math.abs(amt), currency)} (${pct > 0 ? '+' : ''}${pct.toFixed(2)}%)`;
+  if (pct > 0) el.classList.add('up');
+  else if (pct < 0) el.classList.add('down');
+}
+
+function applySellStatusChip(info) {
+  const chip = document.getElementById('sell-status-chip');
+  chip.classList.remove('up', 'down', 'flat');
+  const pct = info.change_rate_pct;
+  if (pct == null) { chip.textContent = '—'; chip.classList.add('flat'); return; }
+  if (pct > 0) { chip.textContent = '상승 중'; chip.classList.add('up'); }
+  else if (pct < 0) { chip.textContent = '하락 중'; chip.classList.add('down'); }
+  else { chip.textContent = '보합'; chip.classList.add('flat'); }
+}
+
+function updateSellPL(currentPrice) {
+  const r = _currentSellPosition;
+  if (!r || currentPrice == null) return;
+  const pl = (currentPrice - r.price) * r.qty;
+  const plPct = r.price > 0 ? (pl / (r.price * r.qty)) * 100 : 0;
+  const valueEl = document.getElementById('sell-pl-value');
+  const pctEl = document.getElementById('sell-pl-pct');
+  const card = document.getElementById('sell-pl-card');
+  const sign = pl > 0 ? '+' : (pl < 0 ? '-' : '');
+  valueEl.textContent = `${sign}${formatPrice(Math.abs(pl), r.currency)}`;
+  pctEl.textContent = ` (${pl > 0 ? '+' : ''}${plPct.toFixed(2)}%)`;
+  valueEl.classList.remove('up', 'down');
+  card.classList.remove('up', 'down');
+  if (pl > 0) { valueEl.classList.add('up'); card.classList.add('up'); }
+  else if (pl < 0) { valueEl.classList.add('down'); card.classList.add('down'); }
+}
+
+async function handleSell() {
+  const r = _currentSellPosition;
+  if (!r || _sellLivePrice == null) return;
+  const sellPrice = _sellLivePrice;
+  const qty = r.qty;
+  const pl = (sellPrice - r.price) * qty;
+  const plPct = r.price > 0 ? (pl / (r.price * qty)) * 100 : 0;
+  const buyDate = new Date(r.date);
+  const now = new Date();
+  const holdingDays = Math.max(1, Math.round((now - buyDate) / 86400000));
+
+  // 매도 완료 화면 헤더·요약 채우기
+  document.getElementById('sfb-title').innerHTML = `<span>${escapeHtml(r.name)}</span> 매도 완료`;
+  document.getElementById('sfb-stockname').textContent = r.name;
+  document.getElementById('sfb-stockcode').textContent = r.code || '';
+  document.getElementById('sfb-buy-price').textContent = formatPrice(r.price, r.currency);
+  document.getElementById('sfb-sell-price').textContent = formatPrice(sellPrice, r.currency);
+  const totalEl = document.getElementById('sfb-pl');
+  const sign = pl > 0 ? '+' : (pl < 0 ? '-' : '');
+  totalEl.textContent = `${sign}${formatPrice(Math.abs(pl), r.currency)} (${pl > 0 ? '+' : ''}${plPct.toFixed(2)}%)`;
+  totalEl.style.color = pl > 0 ? 'var(--red)' : (pl < 0 ? 'var(--primary)' : 'var(--text)');
+
+  document.getElementById('sfb-summary-card').style.display = 'block';
+  document.getElementById('sfb-loading').style.display = 'block';
+  document.getElementById('sfb-result').innerHTML = '';
+  showScreen('screen-sell-feedback', 0);
+
+  // AI 매도 피드백 호출
+  const cur = r.currency || 'KRW';
+  const priceLabel = (v) => cur === 'USD' ? `$${v}` : `${v}원`;
+  const userMsg = `종목명: ${r.name} / 매수가: ${priceLabel(r.price)} × ${formatQty(qty)}주 / 매도가: ${priceLabel(sellPrice)} × ${formatQty(qty)}주 / 보유기간: ${holdingDays}일 / 손익: ${sign}${priceLabel(Math.abs(pl))} (${pl > 0 ? '+' : ''}${plPct.toFixed(2)}%)`;
+
+  let sellFeedback = [];
+  try {
+    const text = await callClaude(SELL_FEEDBACK_SYSTEM, userMsg);
+    const trimmed = text.trim();
+    const lines = trimmed.split('\n').map((l) => l.trim()).filter((l) => l.startsWith('-'));
+    document.getElementById('sfb-loading').style.display = 'none';
+    if (lines.length >= 1) {
+      sellFeedback = lines.slice(0, 3).map((l) => l.replace(/^-\s*/, ''));
+      renderSellFeedback(sellFeedback);
+    } else if (trimmed) {
+      document.getElementById('sfb-result').innerHTML = `<div class="result"><div class="error-msg">${escapeHtml(trimmed)}</div></div>`;
+    } else {
+      document.getElementById('sfb-result').innerHTML = `<div class="result fail"><div class="error-msg">분석 결과 형식이 이상해요</div></div>`;
+    }
+  } catch (err) {
+    document.getElementById('sfb-loading').style.display = 'none';
+    document.getElementById('sfb-result').innerHTML = `<div class="result fail"><div class="error-msg">${escapeHtml(getErrorMessage(err))}</div></div>`;
+  }
+
+  // 기록 업데이트 (상태 무관하게 저장 — 피드백 실패해도 매도 자체는 완료)
+  updateInvestment(r.id, {
+    status: 'sold',
+    sell_date: new Date().toISOString(),
+    sell_price: sellPrice,
+    sell_qty: qty,
+    sell_feedback: sellFeedback
+  });
+}
+
+let lastSellCopyText = '';
+
+function renderSellFeedback(lines) {
+  const titles = ['매도 결과', '배운 점', '다음 액션'];
+  const kinds = ['status', 'risk', 'action'];
+  const icons = [
+    '<svg viewBox="0 0 24 24"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="14 7 21 7 21 14"/></svg>',
+    '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="15" x2="12" y2="15.5"/></svg>',
+    '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>'
+  ];
+
+  const cardsHtml = lines.map((text, i) => `
+    <div class="fb-card">
+      <div class="fb-icon kind-${kinds[i] || 'status'}">${icons[i] || icons[0]}</div>
+      <div class="fb-card-body">
+        <div class="fb-card-label">${titles[i] || ''}</div>
+        <div class="fb-card-text">${renderTerms(text)}</div>
+      </div>
+    </div>
+  `).join('');
+
+  const r = _currentSellPosition;
+  const header = r ? `[${r.name}] 매도 피드백\n` : '매도 피드백\n';
+  lastSellCopyText = header + lines
+    .map((t, i) => `${i + 1}. ${titles[i] || ''}: ${stripTermMarkers(t)}`)
+    .join('\n');
+
+  document.getElementById('sfb-result').innerHTML = `
+    <div class="fb-section-title">AI 매도 피드백</div>
+    <div class="fb-cards">${cardsHtml}</div>
+    <button class="fb-copy-bar" id="sfb-copy-btn" onclick="copySellFeedback()">
+      <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      결과 복사하기
+    </button>
+  `;
+}
+
+async function copySellFeedback() {
+  const text = lastSellCopyText;
+  if (!text) return;
+  const btn = document.getElementById('sfb-copy-btn');
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch (e) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch (_) {}
+    ta.remove();
+  }
+  if (btn) {
+    const copied = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> 복사됨`;
+    const def = `<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> 결과 복사하기`;
+    btn.innerHTML = copied;
+    btn.classList.add('copied');
+    setTimeout(() => { btn.innerHTML = def; btn.classList.remove('copied'); }, 1500);
+  }
 }
 
 /* ============== Init ============== */
