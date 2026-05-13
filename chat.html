@@ -875,10 +875,14 @@
     border-radius: 50%;
     background: var(--bg);
     color: var(--text);
-    font-size: 14px;
     line-height: 1;
     flex-shrink: 0;
     transition: transform 0.25s ease, background 0.15s, color 0.15s;
+  }
+  .rec-chevron svg {
+    width: 18px;
+    height: 18px;
+    display: block;
   }
   .rec-head:hover .rec-chevron { background: #000; color: var(--primary); }
   .rec-card.expanded .rec-chevron {
@@ -2288,7 +2292,7 @@ async function loadRecommendation() {
         <div class="rec-head" onclick="toggleRecGuide(${idx})">
           <div class="rec-row">
             <div class="rec-name">${escapeHtml(s.name)}</div>
-            ${g ? '<span class="rec-chevron">▾</span>' : ''}
+            ${g ? '<span class="rec-chevron"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 16L6 10H18L12 16Z"></path></svg></span>' : ''}
           </div>
           <div class="rec-reason">${renderTerms(s.reason)}</div>
           ${priceHtml}
