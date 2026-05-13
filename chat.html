@@ -343,6 +343,232 @@
     border-color: var(--text);
   }
 
+  /* Buy screen */
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 4px 0;
+    margin-bottom: 14px;
+    transition: color 0.15s;
+    user-select: none;
+    letter-spacing: -0.025em;
+  }
+  .back-link:hover { color: var(--text); }
+  .back-link svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .stock-card {
+    margin-top: 24px;
+    background: var(--surface2);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .stock-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .stock-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.025em;
+  }
+  .stock-code {
+    font-size: 14px;
+    color: var(--text-tertiary);
+    margin-top: 2px;
+    font-feature-settings: 'tnum';
+  }
+  .status-chip {
+    font-size: 14px;
+    font-weight: 600;
+    padding: 5px 11px;
+    border-radius: 999px;
+    letter-spacing: -0.025em;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .status-chip.up { color: var(--red); background: var(--red-dim); }
+  .status-chip.down { color: var(--primary); background: var(--primary-soft); }
+  .status-chip.flat { color: var(--text-tertiary); background: var(--bg); }
+
+  .stock-card-divider {
+    height: 1px;
+    background: var(--bg);
+    margin: 18px 0;
+  }
+  .stock-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .stock-row + .stock-row { margin-top: 10px; }
+  .stock-row-label {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+  .stock-row-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    font-feature-settings: 'tnum';
+  }
+  .stock-row-value.change.up { color: var(--red); }
+  .stock-row-value.change.down { color: var(--primary); }
+  .stock-row-value.unavail { color: var(--text-tertiary); font-weight: 500; }
+
+  .qty-card {
+    margin-top: 12px;
+    background: var(--surface2);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .qty-card-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.025em;
+  }
+  .qty-stepper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .qty-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--bg);
+    color: var(--text);
+    border: none;
+    font-size: 22px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s, opacity 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .qty-btn:hover:not(:disabled) { background: var(--border); }
+  .qty-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .qty-display {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    font-feature-settings: 'tnum';
+    line-height: 1;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 4px;
+  }
+  .qty-display input#qty-num {
+    background: var(--bg);
+    border: 1px solid transparent;
+    outline: none;
+    text-align: center;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    font-family: inherit;
+    font-feature-settings: 'tnum';
+    width: 4ch;
+    min-width: 4ch;
+    padding: 6px 4px;
+    border-radius: 8px;
+    line-height: 1;
+    cursor: text;
+    caret-color: var(--primary);
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .qty-display input#qty-num:hover { border-color: var(--border); }
+  .qty-display input#qty-num:focus { border-color: var(--primary); }
+  /* hide spinner */
+  .qty-display input#qty-num::-webkit-outer-spin-button,
+  .qty-display input#qty-num::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .qty-unit {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+
+  .total-card {
+    margin-top: 12px;
+    background: var(--primary-dim);
+    border-radius: 12px;
+    padding: 18px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+  }
+  .total-label {
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+  .total-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--primary);
+    font-feature-settings: 'tnum';
+    letter-spacing: -0.025em;
+  }
+  .total-unit {
+    font-size: 14px;
+    font-weight: 600;
+    margin-left: 2px;
+  }
+
+  .info-hint {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 14px;
+    font-size: 14px;
+    color: var(--text-tertiary);
+    line-height: 1.55;
+    letter-spacing: -0.025em;
+  }
+  .info-hint .info-icon {
+    margin-left: 0;
+    margin-top: 2px;
+    flex-shrink: 0;
+    vertical-align: baseline;
+  }
+  .qty-error {
+    margin-top: 6px;
+    font-size: 14px;
+    color: var(--red);
+    text-align: center;
+    min-height: 18px;
+  }
+
   /* Buttons */
   .btn {
     margin-top: 4px;
@@ -700,6 +926,141 @@
     letter-spacing: -0.025em;
   }
 
+  /* Feedback summary card (매수 결과 요약) */
+  .fb-summary-card {
+    margin-top: 24px;
+    background: var(--surface2);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .fb-summary-card .stock-card-divider {
+    background: var(--bg);
+  }
+  .fb-summary-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .fb-summary-label {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    letter-spacing: -0.025em;
+  }
+  .fb-summary-value {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+    font-feature-settings: 'tnum';
+    letter-spacing: -0.025em;
+  }
+  .fb-summary-total {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--primary);
+    font-feature-settings: 'tnum';
+    letter-spacing: -0.025em;
+  }
+
+  /* Feedback section header */
+  .fb-section-title {
+    margin-top: 32px;
+    margin-bottom: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.025em;
+  }
+
+  /* Feedback cards (3개의 인사이트) */
+  .fb-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .fb-card {
+    background: var(--surface2);
+    border-radius: 12px;
+    padding: 16px 18px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .fb-icon {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .fb-icon svg {
+    width: 20px;
+    height: 20px;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+  }
+  .fb-icon.kind-status { background: var(--primary-soft); }
+  .fb-icon.kind-status svg { stroke: var(--primary); }
+  .fb-icon.kind-risk { background: var(--amber-dim); }
+  .fb-icon.kind-risk svg { stroke: var(--amber); }
+  .fb-icon.kind-action { background: rgba(110, 231, 183, 0.18); }
+  .fb-icon.kind-action svg { stroke: #6ee7b7; }
+
+  .fb-card-body { flex: 1; min-width: 0; }
+  .fb-card-label {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+    font-weight: 500;
+    letter-spacing: -0.025em;
+  }
+  .fb-card-text {
+    font-size: 15px;
+    color: var(--text);
+    font-weight: 500;
+    line-height: 1.55;
+    letter-spacing: -0.025em;
+  }
+
+  /* Full-width copy button at bottom */
+  .fb-copy-bar {
+    margin-top: 16px;
+    width: 100%;
+    background: var(--surface2);
+    border: none;
+    border-radius: 12px;
+    padding: 16px;
+    color: var(--text-secondary);
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    letter-spacing: -0.025em;
+    transition: background 0.15s, color 0.15s;
+  }
+  .fb-copy-bar:hover { background: var(--border); color: var(--text); }
+  .fb-copy-bar.copied {
+    background: var(--primary);
+    color: var(--btn-text);
+  }
+  .fb-copy-bar svg {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
   /* Investment history */
   .history-list {
     margin-top: 30px;
@@ -1009,39 +1370,93 @@
 
   <!-- Screen 3: Buy -->
   <div class="screen" id="screen-buy">
-    <div class="badge">가상 매수</div>
-    <h1>몇 주를<br><span id="buy-stockname">—</span> 사볼까요?</h1>
-    <p class="subtitle">실제 돈은 들지 않아요. 부담 없이 골라보세요.</p>
-
-    <div class="form">
-      <div class="field">
-        <div class="label-row">
-          <label id="price-label">현재가</label>
-          <span class="hint">시장가로 매수돼요</span>
-        </div>
-        <div class="readonly-price" id="price-display">—</div>
-      </div>
-      <div class="field">
-        <div class="label-row">
-          <label>매수 수량 (주)<i class="info-icon" tabindex="0" data-tip="소수점도 가능해요 (예: 0.5주)">i</i></label>
-          <span class="hint">최대 999주</span>
-        </div>
-        <input id="qty" type="text" inputmode="decimal" placeholder="예: 0.5 또는 2" maxlength="8">
-        <span class="field-error" id="err-qty"></span>
-      </div>
-      <div class="summary" id="buy-summary" style="display:none;">
-        <span>총 매수 금액</span>
-        <b id="buy-total">0원</b>
-      </div>
-      <button class="btn" id="buy-btn" onclick="handleBuy()" disabled>매수하고 피드백 받기</button>
+    <div class="back-link" onclick="navBackToRecommend()">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      종목 다시 선택
     </div>
+    <h1>가상 매수하기</h1>
+    <p class="subtitle">실제 돈이 들지 않아요. 편하게 연습해보세요.</p>
+
+    <div class="stock-card">
+      <div class="stock-card-head">
+        <div>
+          <div class="stock-name" id="buy-stockname">—</div>
+          <div class="stock-code" id="buy-stockcode"></div>
+        </div>
+        <div class="status-chip flat" id="status-chip">—</div>
+      </div>
+      <div class="stock-card-divider"></div>
+      <div class="stock-row">
+        <span class="stock-row-label">현재가</span>
+        <span class="stock-row-value" id="price-display">—</span>
+      </div>
+      <div class="stock-row">
+        <span class="stock-row-label">전일대비</span>
+        <span class="stock-row-value change" id="change-display">—</span>
+      </div>
+    </div>
+
+    <div class="qty-card">
+      <div class="qty-card-label">매수 수량</div>
+      <div class="qty-stepper">
+        <button class="qty-btn" id="qty-minus" onclick="changeQty(-1)" aria-label="수량 감소">−</button>
+        <div class="qty-display">
+          <input id="qty-num" type="text" inputmode="numeric" maxlength="3" value="1"
+                 onfocus="this.select()" oninput="onQtyInput()" onblur="onQtyBlur()" />
+          <span class="qty-unit">주</span>
+        </div>
+        <button class="qty-btn" id="qty-plus" onclick="changeQty(1)" aria-label="수량 증가">+</button>
+      </div>
+    </div>
+
+    <div class="total-card">
+      <span class="total-label">총 투자 금액</span>
+      <span class="total-value"><span id="buy-total">0</span><span class="total-unit" id="buy-total-unit">원</span></span>
+    </div>
+
+    <div class="qty-error" id="err-qty"></div>
+
+    <div class="info-hint">
+      <i class="info-icon" tabindex="0" data-tip="실제 거래가 일어나지 않아요. 매수 결과를 가지고 AI 피드백을 받아볼 수 있어요.">i</i>
+      가상 투자예요. 실제 돈이 오가지 않으니 부담 없이 경험해보세요.
+    </div>
+
+    <button class="btn" id="buy-btn" onclick="handleBuy()" disabled>
+      <span id="buy-btn-text">가상 매수하기</span>
+    </button>
   </div>
 
   <!-- Screen 4: Feedback -->
   <div class="screen" id="screen-feedback">
     <div class="badge">매수 완료 · AI 피드백</div>
     <h1 id="fb-title"><span>—</span> 매수 완료</h1>
-    <p class="subtitle" id="fb-summary">—</p>
+
+    <!-- 매수 요약 카드 (가상 매수가 완료된 종목 + 수량 + 총액) -->
+    <div class="fb-summary-card" id="fb-summary-card" style="display:none;">
+      <div class="stock-card-head">
+        <div>
+          <div class="stock-name" id="fb-stockname">—</div>
+          <div class="stock-code" id="fb-stockcode"></div>
+        </div>
+        <div class="status-chip flat" id="fb-status-chip">—</div>
+      </div>
+      <div class="stock-card-divider"></div>
+      <div class="fb-summary-cols">
+        <div class="fb-summary-col">
+          <div class="fb-summary-label">매수 수량</div>
+          <div class="fb-summary-value" id="fb-qty">—</div>
+        </div>
+        <div class="fb-summary-col">
+          <div class="fb-summary-label">매수가</div>
+          <div class="fb-summary-value" id="fb-price">—</div>
+        </div>
+      </div>
+      <div class="stock-card-divider"></div>
+      <div>
+        <div class="fb-summary-label">총 투자 금액</div>
+        <div class="fb-summary-total" id="fb-total">—</div>
+      </div>
+    </div>
 
     <div id="fb-loading" class="loader-wrap">
       <div class="loader-wrapper">
@@ -1370,10 +1785,21 @@ async function fetchCurrentPrice(code, market) {
       const data = await res.json();
       const priceStr = data?.closePrice;
       if (!priceStr) throw new Error('PRICE_PARSE');
-      const price = Number(String(priceStr).replace(/,/g, ''));
-      if (!price || isNaN(price)) throw new Error('PRICE_NAN');
+      const num = (v) => {
+        if (v == null) return null;
+        const n = Number(String(v).replace(/,/g, ''));
+        return Number.isFinite(n) ? n : null;
+      };
+      const price = num(priceStr);
+      if (!price) throw new Error('PRICE_NAN');
       const currency = data?.currencyType?.code || (market === 'US' ? 'USD' : 'KRW');
-      return { price, currency };
+      return {
+        price,
+        currency,
+        change_rate_pct: num(data?.fluctuationsRatio),
+        change_amount: num(data?.compareToPreviousClosePrice),
+        market_status: data?.marketStatus || null
+      };
     } catch (e) {
       lastErr = e;
     } finally {
@@ -1469,8 +1895,8 @@ async function loadRecommendation() {
     const priced = await Promise.all(stocks.map(async (s) => {
       const market = s.market === 'US' ? 'US' : 'KR';
       try {
-        const { price, currency } = await fetchCurrentPrice(s.code, market);
-        return { ...s, market, price, currency };
+        const info = await fetchCurrentPrice(s.code, market);
+        return { ...s, market, ...info };
       } catch (e) {
         return { ...s, market, price: null, currency: market === 'US' ? 'USD' : 'KRW' };
       }
@@ -1525,90 +1951,224 @@ function formatQty(q) {
   return parseFloat(n.toFixed(4)).toString();
 }
 
+// 매수 수량 상태 (스테퍼로 제어)
+let _buyQty = 1;
+const QTY_MIN = 1;
+const QTY_MAX = 999;
+
+function setQtyError(msg) {
+  const el = document.getElementById('err-qty');
+  if (el) el.textContent = msg || '';
+}
+
 function goToBuy(idx) {
   recommendation = recommendations[idx];
-  document.getElementById('buy-stockname').textContent = recommendation.name;
-  document.getElementById('qty').value = '';
+  const r = recommendation;
+  document.getElementById('buy-stockname').textContent = r.name;
+  document.getElementById('buy-stockcode').textContent = r.code || '';
 
+  // 가격 표시
   const priceEl = document.getElementById('price-display');
-  if (recommendation.price != null) {
-    priceEl.textContent = formatPrice(recommendation.price, recommendation.currency);
-    priceEl.classList.remove('unavailable');
+  if (r.price != null) {
+    priceEl.textContent = formatPrice(r.price, r.currency);
+    priceEl.classList.remove('unavail');
   } else {
-    priceEl.textContent = '시세를 가져올 수 없어요';
-    priceEl.classList.add('unavailable');
+    priceEl.textContent = '시세 불러오기 실패';
+    priceEl.classList.add('unavail');
   }
 
-  setErr('qty', '');
-  updateBuySummary();
+  // 등락 (recommendation 객체에는 change 정보가 없어서 fetch — 실패시 숨김)
+  renderChange(r);
+
+  // 상태 칩
+  renderStatusChip(r);
+
+  // 수량 1로 초기화
+  _buyQty = 1;
+  setQtyError('');
+  updateBuyUI();
   showScreen('screen-buy', 3);
 }
 
-function updateBuySummary() {
-  const qtyRaw = document.getElementById('qty').value.trim();
-  const qty = Number(qtyRaw);
-  const price = recommendation?.price;
-  const cur = recommendation?.currency || 'KRW';
-  const summary = document.getElementById('buy-summary');
+function renderChange(r) {
+  const el = document.getElementById('change-display');
+  el.textContent = '—';
+  el.classList.remove('up', 'down', 'unavail');
 
-  if (price > 0 && qty > 0 && Number.isFinite(qty)) {
-    document.getElementById('buy-total').textContent = formatPrice(price * qty, cur);
-    summary.style.display = 'flex';
+  const pct = r.change_rate_pct;
+  const amt = r.change_amount;
+  if (pct == null || amt == null) {
+    el.textContent = '확인 불가';
+    el.classList.add('unavail');
+    return;
+  }
+  const sign = amt > 0 ? '+' : (amt < 0 ? '-' : '');
+  const amtStr = sign + formatPrice(Math.abs(amt), r.currency);
+  const pctStr = (pct > 0 ? '+' : '') + pct.toFixed(2) + '%';
+  el.textContent = `${amtStr} (${pctStr})`;
+  if (pct > 0) el.classList.add('up');
+  else if (pct < 0) el.classList.add('down');
+}
+
+function renderStatusChip(r) {
+  const chip = document.getElementById('status-chip');
+  chip.classList.remove('up', 'down', 'flat');
+  const pct = r.change_rate_pct;
+  if (pct == null) {
+    chip.textContent = r.market_status === 'OPEN' ? '거래 중' : (r.market_status === 'CLOSE' ? '장 마감' : '—');
+    chip.classList.add('flat');
+  } else if (pct > 0) {
+    chip.textContent = '상승 중';
+    chip.classList.add('up');
+  } else if (pct < 0) {
+    chip.textContent = '하락 중';
+    chip.classList.add('down');
   } else {
-    summary.style.display = 'none';
+    chip.textContent = '보합';
+    chip.classList.add('flat');
+  }
+}
+
+function changeQty(delta) {
+  const next = Math.min(QTY_MAX, Math.max(QTY_MIN, _buyQty + delta));
+  if (next === _buyQty) return;
+  _buyQty = next;
+  setQtyError('');
+  updateBuyUI();
+}
+
+// 사용자가 숫자를 직접 입력할 때
+function onQtyInput() {
+  const input = document.getElementById('qty-num');
+  // 숫자만 남기기
+  const cleaned = input.value.replace(/[^\d]/g, '').slice(0, 3);
+  if (cleaned !== input.value) input.value = cleaned;
+  if (cleaned === '') {
+    // 빈 입력은 일단 허용 (blur 시 보정), 총액·버튼만 임시 비활성
+    _buyQty = 0;
+  } else {
+    let n = parseInt(cleaned, 10);
+    if (n > QTY_MAX) {
+      n = QTY_MAX;
+      input.value = String(n);
+    }
+    _buyQty = n;
+  }
+  setQtyError('');
+  updateBuyUI({ skipInputSync: true });
+}
+
+// 포커스 잃으면 0 또는 빈 값을 1로 보정
+function onQtyBlur() {
+  if (_buyQty < QTY_MIN) {
+    _buyQty = QTY_MIN;
+    updateBuyUI();
+  }
+}
+
+function updateBuyUI(opts = {}) {
+  const r = recommendation;
+  const price = r?.price;
+  const cur = r?.currency || 'KRW';
+  const numEl = document.getElementById('qty-num');
+  // 입력 중에는 값을 덮어쓰지 않음
+  if (!opts.skipInputSync && numEl) numEl.value = _buyQty;
+  document.getElementById('qty-minus').disabled = _buyQty <= QTY_MIN;
+  document.getElementById('qty-plus').disabled = _buyQty >= QTY_MAX;
+
+  const total = (price || 0) * _buyQty;
+  const totalEl = document.getElementById('buy-total');
+  const unitEl = document.getElementById('buy-total-unit');
+  if (price > 0) {
+    // formatPrice returns "298,500원" or "$30.00" — split number and unit for styling
+    const formatted = formatPrice(total, cur);
+    // 통화 단위 분리: 한국은 뒤에 "원", 미국은 앞에 "$"
+    if (cur === 'USD') {
+      totalEl.textContent = formatted; // "$298,500.00" — 그냥 전체
+      unitEl.textContent = '';
+    } else {
+      totalEl.textContent = formatted.replace(/원$/, '');
+      unitEl.textContent = '원';
+    }
+  } else {
+    totalEl.textContent = '—';
+    unitEl.textContent = '';
   }
 
-  const tooMany = qty > QTY_MAX;
-  const noPrice = !(price > 0);
-  document.getElementById('buy-btn').disabled =
-    !qtyRaw || !(qty > 0) || tooMany || noPrice;
+  const btn = document.getElementById('buy-btn');
+  const btnText = document.getElementById('buy-btn-text');
+  if (price > 0 && _buyQty >= QTY_MIN) {
+    btnText.textContent = `${formatPrice(total, cur)} 가상 매수하기`;
+    btn.disabled = false;
+  } else if (price > 0) {
+    btnText.textContent = '수량을 입력해주세요';
+    btn.disabled = true;
+  } else {
+    btnText.textContent = '시세 불러오기 실패';
+    btn.disabled = true;
+  }
 }
 
-function setErr(field, msg) {
-  const el = document.getElementById('err-' + field);
-  const input = document.getElementById(field);
-  if (!el || !input) return;
-  el.textContent = msg;
-  if (msg) input.classList.add('error');
-  else input.classList.remove('error');
-}
-
-// 최대 수량 — 가상 매수 총액이 비현실적으로 커지지 않도록 999주로 제한
-const QTY_MAX = 999;
+// 호환 — 기존 호출자 (예: navHome) 에서 updateBuySummary를 부를 수 있으므로 alias
+function updateBuySummary() { updateBuyUI(); }
 
 function validateBuy() {
-  const qty = document.getElementById('qty').value.trim();
-  const qtyNum = Number(qty);
-  let valid = true;
-
   if (!recommendation?.price) {
-    setErr('qty', '시세를 가져올 수 없어 매수할 수 없어요');
-    valid = false;
-  } else if (!qty || isNaN(qtyNum) || qtyNum <= 0) {
-    setErr('qty', '올바른 수량을 입력해주세요');
-    valid = false;
-  } else if (qtyNum > QTY_MAX) {
-    setErr('qty', `${QTY_MAX.toLocaleString()}주 이하로 입력해주세요`);
-    valid = false;
-  } else setErr('qty', '');
+    setQtyError('시세를 가져올 수 없어 매수할 수 없어요');
+    return false;
+  }
+  if (_buyQty < QTY_MIN || _buyQty > QTY_MAX) {
+    setQtyError(`수량은 ${QTY_MIN}~${QTY_MAX}주 사이여야 해요`);
+    return false;
+  }
+  setQtyError('');
+  return true;
+}
 
-  return valid;
+function navBackToRecommend() {
+  showScreen('screen-recommend', 2);
 }
 
 async function handleBuy() {
   if (!validateBuy()) return;
 
-  const price = recommendation.price;
-  const qtyRaw = document.getElementById('qty').value.trim();
-  const qty = Number(qtyRaw);
-  const stockName = recommendation.name;
-  const currency = recommendation.currency || 'KRW';
+  const r = recommendation;
+  const price = r.price;
+  const qty = _buyQty;
+  const stockName = r.name;
+  const currency = r.currency || 'KRW';
   const isUsd = currency === 'USD';
   const qtyDisplay = formatQty(qty);
 
+  // 타이틀
   document.getElementById('fb-title').innerHTML = `<span>${escapeHtml(stockName)}</span> 매수 완료`;
-  document.getElementById('fb-summary').textContent =
-    `${formatPrice(price, currency)} × ${qtyDisplay}주 = ${formatPrice(price * qty, currency)}`;
+
+  // 요약 카드 채우기
+  document.getElementById('fb-stockname').textContent = stockName;
+  document.getElementById('fb-stockcode').textContent = r.code || '';
+  document.getElementById('fb-qty').textContent = qtyDisplay + '주';
+  document.getElementById('fb-price').textContent = formatPrice(price, currency);
+  document.getElementById('fb-total').textContent = formatPrice(price * qty, currency);
+
+  // 등락 상태 칩 (매수 화면과 같은 로직)
+  const chip = document.getElementById('fb-status-chip');
+  chip.classList.remove('up', 'down', 'flat');
+  const pct = r.change_rate_pct;
+  if (pct == null) {
+    chip.textContent = '—';
+    chip.classList.add('flat');
+  } else if (pct > 0) {
+    chip.textContent = `+${pct.toFixed(2)}%`;
+    chip.classList.add('up');
+  } else if (pct < 0) {
+    chip.textContent = `${pct.toFixed(2)}%`;
+    chip.classList.add('down');
+  } else {
+    chip.textContent = '0.00%';
+    chip.classList.add('flat');
+  }
+
+  document.getElementById('fb-summary-card').style.display = 'block';
   document.getElementById('fb-loading').style.display = 'block';
   document.getElementById('fb-result').innerHTML = '';
 
@@ -1640,21 +2200,30 @@ async function handleBuy() {
 let lastFeedbackCopyText = '';
 
 function showFeedback(lines) {
-  const titles = ['현재 종목 상태', '리스크 포인트', '추천 액션'];
-  // 시스템 프롬프트가 "- 라벨: 본문" 포맷으로 응답하므로
-  // UI 라벨과 중복되지 않게 본문만 추출
+  const titles = ['현재 상황', '리스크 체크', '액션 포인트'];
+  const kinds = ['status', 'risk', 'action'];
+  const icons = [
+    // trending up
+    '<svg viewBox="0 0 24 24"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="14 7 21 7 21 14"/></svg>',
+    // warning triangle
+    '<svg viewBox="0 0 24 24"><path d="M12 3 L22 20 H2 Z"/><line x1="12" y1="10" x2="12" y2="14"/><line x1="12" y1="17" x2="12" y2="17.5"/></svg>',
+    // target
+    '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>'
+  ];
+
+  // 시스템 프롬프트가 "- 라벨: 본문" 포맷으로 응답하므로 UI 라벨 중복 제거
   const stripPrefix = (line) => line
     .replace(/^-\s*/, '')
-    .replace(/^(현재 종목 상태( 요약)?|리스크 포인트|추천 액션)\s*[:：]\s*/, '');
+    .replace(/^(현재 (종목 )?상태( 요약)?|리스크 (포인트|체크)|(추천 )?액션( 포인트)?)\s*[:：]\s*/, '');
 
   const cleaned = lines.map(stripPrefix);
 
-  const html = cleaned.map((text, i) => `
-    <div class="feedback-line">
-      <div class="line-num">${i + 1}</div>
-      <div class="line-body">
-        <div class="line-title">${titles[i] || ''}</div>
-        <div class="line-text">${renderTerms(text)}</div>
+  const cardsHtml = cleaned.map((text, i) => `
+    <div class="fb-card">
+      <div class="fb-icon kind-${kinds[i] || 'status'}">${icons[i] || icons[0]}</div>
+      <div class="fb-card-body">
+        <div class="fb-card-label">${titles[i] || ''}</div>
+        <div class="fb-card-text">${renderTerms(text)}</div>
       </div>
     </div>
   `).join('');
@@ -1667,13 +2236,12 @@ function showFeedback(lines) {
     .join('\n');
 
   document.getElementById('fb-result').innerHTML = `
-    <div class="result">
-      <div class="result-header">
-        <div class="result-label">AI 피드백</div>
-        <button class="copy-btn" id="fb-copy-btn" onclick="copyFeedback()">복사하기</button>
-      </div>
-      <div class="feedback-lines">${html}</div>
-    </div>
+    <div class="fb-section-title">AI 피드백</div>
+    <div class="fb-cards">${cardsHtml}</div>
+    <button class="fb-copy-bar" id="fb-copy-btn" onclick="copyFeedback()">
+      <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      결과 복사하기
+    </button>
   `;
 
   // 투자 기록 저장
@@ -1684,7 +2252,7 @@ function showFeedback(lines) {
     market: recommendation?.market || '',
     currency: recommendation?.currency || 'KRW',
     price: recommendation?.price ?? null,
-    qty: Number(document.getElementById('qty').value) || 0,
+    qty: _buyQty || 0,
     feedback: cleaned
   });
 }
@@ -1707,10 +2275,18 @@ async function copyFeedback() {
     ta.remove();
   }
   if (btn) {
-    btn.textContent = '복사됨';
+    const copiedHtml = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      복사됨
+    `;
+    const defaultHtml = `
+      <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      결과 복사하기
+    `;
+    btn.innerHTML = copiedHtml;
     btn.classList.add('copied');
     setTimeout(() => {
-      btn.textContent = '복사하기';
+      btn.innerHTML = defaultHtml;
       btn.classList.remove('copied');
     }, 1500);
   }
@@ -2031,11 +2607,6 @@ function navHome() {
 }
 
 /* ============== Init ============== */
-document.getElementById('qty').addEventListener('input', () => {
-  setErr('qty', '');
-  updateBuySummary();
-});
-
 document.getElementById('settings-modal').addEventListener('click', (e) => {
   if (e.target.id === 'settings-modal') closeSettings();
 });
