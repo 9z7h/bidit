@@ -1,6 +1,13 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "",
+  "outputDirectory": ".",
   "rewrites": [
     { "source": "/", "destination": "/chat.html" }
-  ]
+  ],
+  "functions": {
+    "api/chat.js": {
+      "maxDuration": 30
+    }
+  }
 }

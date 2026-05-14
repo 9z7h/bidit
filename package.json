@@ -2,7 +2,6 @@
   "name": "hello-llm",
   "version": "1.0.0",
   "description": "주린이 투자 가이드 — Claude API 기반",
-  "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
