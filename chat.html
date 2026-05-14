@@ -20,6 +20,30 @@
       tracesSampleRate: 0,
       replaysSessionSampleRate: 0,
       replaysOnErrorSampleRate: 0,
+      ignoreErrors: [
+        "ResizeObserver loop limit exceeded",
+        "ResizeObserver loop completed with undelivered notifications",
+        "Non-Error promise rejection captured",
+        "Network request failed",
+        "Failed to fetch",
+        "Load failed",
+        "AbortError",
+        /chrome-extension:\/\//i,
+        /safari-extension:\/\//i,
+        /moz-extension:\/\//i
+      ],
+      denyUrls: [
+        /chrome-extension:\/\//i,
+        /safari-extension:\/\//i,
+        /moz-extension:\/\//i
+      ],
+      beforeSend(event, hint) {
+        const err = hint && hint.originalException;
+        const msg = (err && err.message) || event.message || "";
+        // 백그라운드 탭 fetch 취소·페이지 이동으로 인한 abort는 알림 가치 없음
+        if (/aborted|AbortError/i.test(msg)) return null;
+        return event;
+      },
       // 사용자 식별 (선택) — 익명 ID 부여
       initialScope: {
         user: { id: (function(){
@@ -171,25 +195,6 @@
     transition: background 0.25s;
   }
   .dot.active { background: var(--primary); }
-  .topbar-actions {
-    display: flex;
-    gap: 4px;
-  }
-  .icon-btn {
-    background: transparent;
-    border: none;
-    color: var(--text-tertiary);
-    width: 36px; height: 36px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 16px;
-    display: flex; align-items: center; justify-content: center;
-    transition: background 0.15s, color 0.15s;
-  }
-  .icon-btn:hover {
-    color: var(--text);
-    background: var(--surface2);
-  }
 
   /* Headers */
   .badge {
@@ -1378,51 +1383,6 @@
     letter-spacing: -0.025em;
   }
 
-  /* Settings modal */
-  .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.4);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-    z-index: 100;
-    backdrop-filter: blur(4px);
-  }
-  .modal-overlay.show { display: flex; }
-  .modal {
-    background: var(--card-bg);
-    border-radius: 20px;
-    padding: 28px 24px 24px;
-    max-width: 420px;
-    width: 100%;
-  }
-  .modal h2 {
-    font-size: 19px;
-    font-weight: 700;
-    margin-bottom: 8px;
-    letter-spacing: -0.025em;
-  }
-  .modal p {
-    font-size: 14px;
-    color: var(--text-secondary);
-    line-height: 1.55;
-    margin-bottom: 20px;
-    letter-spacing: -0.025em;
-  }
-  .modal a {
-    color: var(--accent-text);
-    text-decoration: underline;
-    font-weight: 600;
-  }
-  .modal a:hover { text-decoration: underline; }
-  .modal-actions {
-    display: flex; gap: 8px;
-    margin-top: 20px;
-  }
-  .modal-actions .btn { margin-top: 0; flex: 1; }
-
   /* Footer */
   .divider {
     height: 1px;
@@ -1472,9 +1432,6 @@
     <div class="tab-toggle">
       <button type="button" class="tab-btn active" data-nav="home" onclick="navHome()">투자</button>
       <button type="button" class="tab-btn" data-nav="history" onclick="navHistory()">투자내역</button>
-    </div>
-    <div class="topbar-actions">
-      <button class="icon-btn" onclick="openSettings()" title="API 키 설정">⚙</button>
     </div>
   </div>
 
@@ -1794,25 +1751,6 @@
   </main>
 </div>
 
-<!-- Settings Modal -->
-<div class="modal-overlay" id="settings-modal">
-  <div class="modal">
-    <h2>Anthropic API 키 설정</h2>
-    <p>
-      이 앱은 브라우저에서 직접 Claude API를 호출해요.<br>
-      <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com</a>에서 키를 발급받아 입력해주세요. 키는 이 브라우저에만 저장됩니다.
-    </p>
-    <div class="field">
-      <label>API Key</label>
-      <input id="api-key-input" type="password" placeholder="sk-ant-...">
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="closeSettings()">취소</button>
-      <button class="btn" onclick="saveApiKey()">저장</button>
-    </div>
-  </div>
-</div>
-
 <script>
 /* ============== System Prompts ============== */
 const FEEDBACK_SYSTEM = `[01 ROLE]
@@ -2041,10 +1979,6 @@ let onboardingStep = 0;
 let recommendation = null;
 
 /* ============== API ============== */
-function getApiKey() {
-  return localStorage.getItem('anthropic_api_key') || '';
-}
-
 async function callClaude(system, userMessage, { json = false } = {}) {
   // 서버 프록시 경유 — 키는 서버에서 관리, 도구 호출(시세·뉴스·공시)도 서버가 처리
   // json=true 일 때는 도구 비활성화 (RECOMMEND_SYSTEM의 JSON 출력과 충돌 방지)
@@ -2080,10 +2014,9 @@ async function callClaude(system, userMessage, { json = false } = {}) {
 }
 
 function getErrorMessage(err) {
-  if (err.code === 'NO_API_KEY') return 'API 키를 먼저 설정해주세요 (오른쪽 위 ⚙ 클릭)';
   if (!navigator.onLine) return '인터넷 연결을 확인해주세요';
   if (err.name === 'AbortError') return '응답이 너무 오래 걸려요. 다시 시도해주세요';
-  if (err.status === 401) return 'API 키가 올바르지 않아요. ⚙에서 다시 입력해주세요';
+  if (err.status === 401) return '서버 인증에 문제가 생겼어요. 잠시 후 다시 시도해주세요';
   if (err.status === 429) return '요청이 너무 많아요. 잠시 후 다시 시도해주세요';
   return '분석 중 문제가 생겼어요. 다시 시도해주세요';
 }
@@ -2417,7 +2350,8 @@ function renderChange(r) {
   const sign = amt > 0 ? '+' : (amt < 0 ? '-' : '');
   const amtStr = sign + formatPrice(Math.abs(amt), r.currency);
   const pctStr = (pct > 0 ? '+' : '') + pct.toFixed(2) + '%';
-  el.textContent = `${amtStr} (${pctStr})`;
+  // amtStr 안에 formatPrice가 만든 <span class="krw-conv"> 마크업이 들어있으므로 innerHTML
+  el.innerHTML = `${amtStr} (${pctStr})`;
   if (pct > 0) el.classList.add('up');
   else if (pct < 0) el.classList.add('down');
 }
@@ -2892,22 +2826,6 @@ function restart() {
   showScreen('screen-onboarding', 1);
 }
 
-
-/* ============== Settings ============== */
-function openSettings() {
-  document.getElementById('api-key-input').value = getApiKey();
-  document.getElementById('settings-modal').classList.add('show');
-}
-function closeSettings() {
-  document.getElementById('settings-modal').classList.remove('show');
-}
-function saveApiKey() {
-  const key = document.getElementById('api-key-input').value.trim();
-  if (key) localStorage.setItem('anthropic_api_key', key);
-  else localStorage.removeItem('anthropic_api_key');
-  closeSettings();
-}
-
 /* ============== Investment history ============== */
 const HISTORY_KEY = 'investment_history';
 const HISTORY_LIMIT = 50;
@@ -3318,10 +3236,6 @@ async function copySellFeedback() {
 }
 
 /* ============== Init ============== */
-document.getElementById('settings-modal').addEventListener('click', (e) => {
-  if (e.target.id === 'settings-modal') closeSettings();
-});
-
 renderOnboarding();
 showScreen('screen-onboarding', 1);
 
