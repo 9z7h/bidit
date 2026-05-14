@@ -1,5 +1,6 @@
 // Vercel Serverless Function: POST /api/chat
 // 브라우저(chat.html)에서 호출 → Claude + 도구 호출 루프 처리
+const { captureAndFlush } = require("../lib/sentry.js"); // Sentry init 먼저
 const { callWithTools } = require("../lib/tools.js");
 
 // trailing slash·대소문자 차이를 흡수
@@ -58,6 +59,10 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({ text });
   } catch (e) {
     console.error("[/api/chat] error:", e);
+    await captureAndFlush(e, {
+      route: "/api/chat",
+      body_preview: typeof req.body === "object" ? Object.keys(req.body || {}) : null
+    });
     return res.status(500).json({ error: e.message || "server_error" });
   }
 };

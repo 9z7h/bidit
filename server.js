@@ -3,6 +3,7 @@ require("dotenv").config();
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
+const { captureAndFlush } = require("./lib/sentry.js"); // Sentry init 먼저
 const { callWithTools } = require("./lib/tools.js");
 
 /* ============== Security ============== */
@@ -116,6 +117,7 @@ const server = http.createServer(async (req, res) => {
       res.end(JSON.stringify({ text }));
     } catch (e) {
       console.error(e);
+      await captureAndFlush(e, { route: "/api/chat" });
       res.writeHead(500, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ error: e.message || "server_error" }));
     }
