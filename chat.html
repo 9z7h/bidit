@@ -50,6 +50,8 @@
     });
   }
 </script>
+<!-- html2canvas (가이드 카드 이미지 저장용) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous"></script>
 <style>
   @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css');
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -89,6 +91,7 @@
       'system-ui', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     font-feature-settings: 'tnum';
     letter-spacing: -0.025em;
+    word-break: keep-all;
     min-height: 100vh;
     margin: 0;
     -webkit-font-smoothing: antialiased;
@@ -1302,6 +1305,29 @@
     stroke-linejoin: round;
   }
 
+  /* 가이드 카드 이미지 저장 */
+  .fb-capture {
+    margin-top: 40px;
+    background: var(--card-bg);
+    border-radius: 16px;
+  }
+  .fb-capture > .fb-summary-card { margin-top: 0; }
+  .fb-capture .fb-section-title { margin-top: 28px; }
+  .fb-capture.capturing { padding: 24px; }
+  .fb-capture-foot {
+    margin-top: 16px;
+    font-size: 12px;
+    color: var(--text-tertiary);
+    letter-spacing: -0.025em;
+  }
+  .fb-actions {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .fb-actions .fb-copy-bar { margin-top: 0; }
+
   /* Investment history */
   .history-list {
     margin-top: 30px;
@@ -1392,13 +1418,6 @@
   }
 
   /* Stock term tooltip */
-  .term {
-    display: inline;
-    cursor: help;
-    position: relative;
-    color: inherit;
-    font-weight: inherit;
-  }
   [data-tip]:hover::before,
   [data-tip]:focus-visible::before {
     content: attr(data-tip);
@@ -1519,7 +1538,7 @@
   </h1>
   <p class="intro-sub">
     투자 성향만 알려주면 종목을 추천하고,<br>
-    가상으로 매수·매도하며 AI가 3줄로 짚어드려요.
+    가상으로 구매·판매하며 AI가 3줄로 짚어드려요.
   </p>
 
   <div class="intro-steps">
@@ -1540,7 +1559,7 @@
     <div class="intro-step">
       <div class="intro-step-num">3</div>
       <div class="intro-step-text">
-        <strong>가상 매수 · 피드백</strong>
+        <strong>가상 구매 · 피드백</strong>
         <span>AI가 3줄로 짚어주는 투자 가이드</span>
       </div>
     </div>
@@ -1606,7 +1625,7 @@
       <div class="rec-list" id="rec-list"></div>
 
       <div class="step-guide">
-        <div class="step-guide-title">매수 전 할 행동</div>
+        <div class="step-guide-title">구매 전 할 행동</div>
         <div id="step-list"></div>
       </div>
     </div>
@@ -1626,7 +1645,7 @@
       <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
       종목 다시 선택
     </div>
-    <h1>가상 매수하기</h1>
+    <h1>가상 구매하기</h1>
     <p class="subtitle">실제 돈이 들지 않아요. 편하게 연습해보세요.</p>
 
     <div class="stock-card">
@@ -1648,7 +1667,7 @@
     </div>
 
     <div class="qty-card">
-      <div class="qty-card-label">매수 수량</div>
+      <div class="qty-card-label">구매 수량</div>
       <div class="qty-stepper">
         <button class="qty-btn" id="qty-minus" onclick="changeQty(-1)" aria-label="수량 감소">−</button>
         <div class="qty-display">
@@ -1668,49 +1687,52 @@
     <div class="qty-error" id="err-qty"></div>
 
     <div class="info-hint">
-      <i class="info-icon" tabindex="0" data-tip="실제 거래가 일어나지 않아요. 매수 결과를 가지고 투자 가이드을 받아볼 수 있어요.">i</i>
+      <i class="info-icon" tabindex="0" data-tip="실제 거래가 일어나지 않아요. 구매 결과를 가지고 투자 가이드을 받아볼 수 있어요.">i</i>
       가상 투자예요. 실제 돈이 오가지 않으니 부담 없이 경험해보세요.
     </div>
 
     <button class="btn" id="buy-btn" onclick="handleBuy()" disabled>
-      <span id="buy-btn-text">가상 매수하기</span>
+      <span id="buy-btn-text">구매하기</span>
     </button>
   </div>
 
   <!-- Screen 4: Feedback -->
   <div class="screen" id="screen-feedback">
     <div class="screen-header">
-      <div class="badge">매수 완료 · 투자 가이드</div>
+      <div class="badge">구매 완료 · 투자 가이드</div>
       <div class="progress">
         <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
       </div>
     </div>
-    <h1 id="fb-title"><span>—</span> 매수 완료</h1>
+    <h1 id="fb-title"><span>—</span> 구매 완료</h1>
 
-    <!-- 매수 요약 카드 (가상 매수가 완료된 종목 + 수량 + 총액) -->
-    <div class="fb-summary-card" id="fb-summary-card" style="display:none;">
-      <div class="stock-card-head">
+    <div class="fb-capture" id="fb-capture">
+      <!-- 매수 요약 카드 (가상 매수가 완료된 종목 + 수량 + 총액) -->
+      <div class="fb-summary-card" id="fb-summary-card" style="display:none;">
+        <div class="stock-card-head">
+          <div>
+            <div class="stock-name" id="fb-stockname">—</div>
+          </div>
+          <div class="status-chip flat" id="fb-status-chip">—</div>
+        </div>
+        <div class="stock-card-divider"></div>
+        <div class="fb-summary-cols">
+          <div class="fb-summary-col">
+            <div class="fb-summary-label">구매 수량</div>
+            <div class="fb-summary-value" id="fb-qty">—</div>
+          </div>
+          <div class="fb-summary-col">
+            <div class="fb-summary-label">구매가</div>
+            <div class="fb-summary-value" id="fb-price">—</div>
+          </div>
+        </div>
+        <div class="stock-card-divider"></div>
         <div>
-          <div class="stock-name" id="fb-stockname">—</div>
-        </div>
-        <div class="status-chip flat" id="fb-status-chip">—</div>
-      </div>
-      <div class="stock-card-divider"></div>
-      <div class="fb-summary-cols">
-        <div class="fb-summary-col">
-          <div class="fb-summary-label">매수 수량</div>
-          <div class="fb-summary-value" id="fb-qty">—</div>
-        </div>
-        <div class="fb-summary-col">
-          <div class="fb-summary-label">매수가</div>
-          <div class="fb-summary-value" id="fb-price">—</div>
+          <div class="fb-summary-label">총 투자 금액</div>
+          <div class="fb-summary-total" id="fb-total">—</div>
         </div>
       </div>
-      <div class="stock-card-divider"></div>
-      <div>
-        <div class="fb-summary-label">총 투자 금액</div>
-        <div class="fb-summary-total" id="fb-total">—</div>
-      </div>
+      <div id="fb-result"></div>
     </div>
 
     <div id="fb-loading" class="loader-wrap">
@@ -1727,7 +1749,16 @@
       <div class="loader-caption">투자 가이드 분석 중<span class="dot-loader"><span>.</span><span>.</span><span>.</span></span></div>
     </div>
 
-    <div id="fb-result"></div>
+    <div class="fb-actions" id="fb-actions" style="display:none;">
+      <button class="fb-copy-bar" id="fb-copy-btn" onclick="copyFeedback()">
+        <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        결과 복사하기
+      </button>
+      <button class="fb-copy-bar" id="fb-save-btn" onclick="saveFeedbackCard('buy')">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        카드 저장하기
+      </button>
+    </div>
 
     <div class="restart-link" onclick="restart()" style="margin-top:24px;">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1744,8 +1775,8 @@
       <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
       투자 기록으로
     </div>
-    <h1>매도하기</h1>
-    <p class="subtitle">가상 매도예요. 손익을 미리 확인해 보세요.</p>
+    <h1>판매하기</h1>
+    <p class="subtitle">가상 판매예요. 손익을 미리 확인해 보세요.</p>
 
     <div class="stock-card">
       <div class="stock-card-head">
@@ -1768,15 +1799,15 @@
     <div class="qty-card">
       <div class="qty-card-label">보유 내역</div>
       <div class="stock-row">
-        <span class="stock-row-label">매수가</span>
+        <span class="stock-row-label">구매가</span>
         <span class="stock-row-value" id="sell-buy-price">—</span>
       </div>
       <div class="stock-row">
-        <span class="stock-row-label">매수 수량</span>
+        <span class="stock-row-label">구매 수량</span>
         <span class="stock-row-value" id="sell-buy-qty">—</span>
       </div>
       <div class="stock-row">
-        <span class="stock-row-label">매수일</span>
+        <span class="stock-row-label">구매일</span>
         <span class="stock-row-value" id="sell-buy-date">—</span>
       </div>
     </div>
@@ -1789,44 +1820,47 @@
     </div>
 
     <div class="info-hint">
-      <i class="info-icon" tabindex="0" data-tip="매도하면 보유 상태가 종료되고 손익이 확정돼요. (가상 거래)">i</i>
-      매도하면 보유 종료로 기록돼요. 이후엔 매도 결과 피드백을 받아볼 수 있어요.
+      <i class="info-icon" tabindex="0" data-tip="판매하면 보유 상태가 종료되고 손익이 확정돼요. (가상 거래)">i</i>
+      판매하면 보유 종료로 기록돼요. 이후엔 판매 결과 피드백을 받아볼 수 있어요.
     </div>
 
     <button class="btn" id="sell-btn" onclick="handleSell()" disabled>
-      <span id="sell-btn-text">매도하기</span>
+      <span id="sell-btn-text">판매하기</span>
     </button>
   </div>
 
   <!-- Screen 7: Sell Feedback -->
   <div class="screen" id="screen-sell-feedback">
     <div class="screen-header">
-      <div class="badge">매도 완료 · 투자 가이드</div>
+      <div class="badge">판매 완료 · 투자 가이드</div>
     </div>
-    <h1 id="sfb-title"><span>—</span> 매도 완료</h1>
+    <h1 id="sfb-title"><span>—</span> 판매 완료</h1>
 
-    <div class="fb-summary-card" id="sfb-summary-card" style="display:none;">
-      <div class="stock-card-head">
+    <div class="fb-capture" id="sfb-capture">
+      <div class="fb-summary-card" id="sfb-summary-card" style="display:none;">
+        <div class="stock-card-head">
+          <div>
+            <div class="stock-name" id="sfb-stockname">—</div>
+          </div>
+        </div>
+        <div class="stock-card-divider"></div>
+        <div class="fb-summary-cols">
+          <div class="fb-summary-col">
+            <div class="fb-summary-label">구매가</div>
+            <div class="fb-summary-value" id="sfb-buy-price">—</div>
+          </div>
+          <div class="fb-summary-col">
+            <div class="fb-summary-label">판매가</div>
+            <div class="fb-summary-value" id="sfb-sell-price">—</div>
+          </div>
+        </div>
+        <div class="stock-card-divider"></div>
         <div>
-          <div class="stock-name" id="sfb-stockname">—</div>
+          <div class="fb-summary-label">실현 손익</div>
+          <div class="fb-summary-total" id="sfb-pl">—</div>
         </div>
       </div>
-      <div class="stock-card-divider"></div>
-      <div class="fb-summary-cols">
-        <div class="fb-summary-col">
-          <div class="fb-summary-label">매수가</div>
-          <div class="fb-summary-value" id="sfb-buy-price">—</div>
-        </div>
-        <div class="fb-summary-col">
-          <div class="fb-summary-label">매도가</div>
-          <div class="fb-summary-value" id="sfb-sell-price">—</div>
-        </div>
-      </div>
-      <div class="stock-card-divider"></div>
-      <div>
-        <div class="fb-summary-label">실현 손익</div>
-        <div class="fb-summary-total" id="sfb-pl">—</div>
-      </div>
+      <div id="sfb-result"></div>
     </div>
 
     <div id="sfb-loading" class="loader-wrap">
@@ -1840,10 +1874,19 @@
         <span class="loader-letter">g</span>
         <div class="loader"></div>
       </div>
-      <div class="loader-caption">매도 결과 분석 중<span class="dot-loader"><span>.</span><span>.</span><span>.</span></span></div>
+      <div class="loader-caption">판매 결과 분석 중<span class="dot-loader"><span>.</span><span>.</span><span>.</span></span></div>
     </div>
 
-    <div id="sfb-result"></div>
+    <div class="fb-actions" id="sfb-actions" style="display:none;">
+      <button class="fb-copy-bar" id="sfb-copy-btn" onclick="copySellFeedback()">
+        <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        결과 복사하기
+      </button>
+      <button class="fb-copy-bar" id="sfb-save-btn" onclick="saveFeedbackCard('sell')">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        카드 저장하기
+      </button>
+    </div>
 
     <div class="restart-link" onclick="navHistory()" style="margin-top:24px;">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1857,11 +1900,11 @@
   <!-- Screen 5: History -->
   <div class="screen" id="screen-history">
     <h1>투자 기록</h1>
-    <p class="subtitle" id="history-subtitle">지금까지의 가상 매수 내역이에요.</p>
+    <p class="subtitle" id="history-subtitle">지금까지의 가상 구매 내역이에요.</p>
     <div class="history-list" id="history-list"></div>
     <div class="history-empty" id="history-empty" style="display:none;">
       <p>아직 기록이 없어요.</p>
-      <p class="hint">홈에서 가상 매수를 시작해보세요.</p>
+      <p class="hint">홈에서 가상 구매를 시작해보세요.</p>
     </div>
     <button class="history-clear" id="history-clear" onclick="clearHistory()" style="display:none;">전체 기록 삭제</button>
   </div>
@@ -1877,7 +1920,6 @@
 const FEEDBACK_SYSTEM = `[01 ROLE]
 너는 주린이를 위한 주식 투자 피드백 가이드야.
 겁주는 표현 금지. 단정·과장 금지.
-중요: 출력 3줄 안에 주린이가 모를 만한 주식 용어는 반드시 "용어*" 형식(뒤에 별표 1개)으로 표기한다. 최소 2개 이상의 용어에 별표를 붙여라.
 
 [02 TASK]
 <input> 안의 종목명, 매수 가격, 매수 수량을 보고
@@ -1897,28 +1939,26 @@ const FEEDBACK_SYSTEM = `[01 ROLE]
   필요하면 "확인 필요" 또는 일반적 방향성("회복 기대", "변동성 큼")으로 표현
 - 모르는 종목은 "- 정보를 찾기 어려운 종목이에요" 한 줄만 출력
 - 주린이가 이해할 수 있는 쉬운 말로
-- 주린이가 모를 만한 주식 용어는 반드시 "용어*" 형식(뒤에 별표 1개)으로 표기.
-  예: 횡보*, 변동성*, 분할 매수*, 모멘텀*, 업황*, 반등*, 리스크*, 고평가*
 - 줄 바꿈 없이 3줄만 출력
 
 [05 EXAMPLES]
 입력 — 종목명: 삼성전자 / 매수 가격: 70,000원 / 매수 수량: 10주
 출력
-- 현재 삼성전자는 반도체 업황* 회복 기대로 횡보* 중
-- 단기 반등* 후 재하락 가능성 있어 추가 매수 주의
-- 지금은 보유 유지, 65,000원 아래 시 분할 매수* 재검토
+- 현재 삼성전자는 반도체 업황 회복 기대로 횡보 중
+- 단기 반등 후 재하락 가능성 있어 추가 매수 주의
+- 지금은 보유 유지, 65,000원 아래 시 분할 매수 재검토
 
 입력 — 종목명: 카카오 / 매수 가격: 42,000원 / 매수 수량: 5주
 출력
 - 카카오는 규제 이슈로 주가 회복이 더딘 상황
-- 플랫폼 규제 리스크* 남아 있어 변동성* 주의
-- 추가 매수보다 보유 유지, 실적* 발표 후 재판단
+- 플랫폼 규제 리스크 남아 있어 변동성 주의
+- 추가 매수보다 보유 유지, 실적 발표 후 재판단
 
 입력 — 종목명: 애플 / 매수 가격: $230 / 매수 수량: 3주
 출력
 - 애플은 AI 기능 확대와 서비스 매출 호조로 견조
-- 고평가* 부담과 환율 변동성* 함께 점검 필요
-- 보유 유지, 매수가 -10% 구간에서 분할 매수* 검토
+- 고평가 부담과 환율 변동성 함께 점검 필요
+- 보유 유지, 매수가 -10% 구간에서 분할 매수 검토
 
 [06 EDGE CASES]
 - 빈 입력·잘못된 숫자 입력 → 클라이언트에서 처리 (시스템 프롬프트 범위 밖)
@@ -1941,39 +1981,39 @@ const RECOMMEND_SYSTEM = `[01 ROLE]
       "name": "삼성전자",
       "code": "005930",
       "market": "KR",
-      "reason": "반도체 대형주*로 초보자 접근 쉬움",
+      "reason": "반도체 대형주로 초보자 접근 쉬움",
       "guide": {
         "fit": "안정형·IT 입문 모두에 잘 맞아요",
-        "strength": "국내 시가총액* 1위, 거래량* 많아 매매 부담 적음",
-        "caution": "반도체 업황* 사이클에 따라 단기 변동성* 큼"
+        "strength": "국내 시가총액 1위, 거래량 많아 매매 부담 적음",
+        "caution": "반도체 업황 사이클에 따라 단기 변동성 큼"
       }
     },
     {
       "name": "Apple",
       "code": "AAPL.O",
       "market": "US",
-      "reason": "변동성* 낮은 미국 대표 기술주*",
+      "reason": "변동성 낮은 미국 대표 기술주",
       "guide": {
-        "fit": "안정적인 미국 대형주* 입문에 적합",
-        "strength": "꾸준한 매출과 자사주 매입*으로 주주 환원 강점",
-        "caution": "환율 변동성*과 고평가* 부담 함께 점검 필요"
+        "fit": "안정적인 미국 대형주 입문에 적합",
+        "strength": "꾸준한 매출과 자사주 매입으로 주주 환원 강점",
+        "caution": "환율 변동성과 고평가 부담 함께 점검 필요"
       }
     },
     {
       "name": "JPMorgan",
       "code": "JPM",
       "market": "US",
-      "reason": "안정적 배당* 주는 미국 금융주*",
+      "reason": "안정적 배당 주는 미국 금융주",
       "guide": {
-        "fit": "꾸준한 배당* 받고 싶은 안정형 투자자에게 적합",
-        "strength": "미국 최대 은행, 분기 실적*·배당이 안정적",
+        "fit": "꾸준한 배당 받고 싶은 안정형 투자자에게 적합",
+        "strength": "미국 최대 은행, 분기 실적·배당이 안정적",
         "caution": "금리 인하기엔 순이자마진 압박 가능"
       }
     }
   ],
   "steps": [
     "현재가 차트 한 번 보기",
-    "관심 종목 등락률* 확인하기",
+    "관심 종목 등락률 확인하기",
     "가상 매수 금액 정해보기"
   ]
 }
@@ -1985,7 +2025,6 @@ const RECOMMEND_SYSTEM = `[01 ROLE]
 - market 은 "KR"(한국) 또는 "US"(미국)
 - reason 은 단정·과장 금지. 추측 표현 대신 검증된 특성만 언급
 - guide.fit / guide.strength / guide.caution 은 각 1문장(40자 이내). 주린이 친화 어조, 단정·겁주는 표현 금지
-- reason·steps·guide 안에 주린이가 모를 만한 주식 용어는 "용어*" 형식(뒤에 별표 1개)으로 표기. 예: 대형주*, 배당*, 변동성*, PER*
 
 [05 한국 종목코드 (6자리 숫자)]
 삼성전자 "005930", SK하이닉스 "000660", 카카오 "035720", 네이버 "035420",
@@ -2023,7 +2062,6 @@ LG화학 "051910", 삼성SDI "006400", LG에너지솔루션 "373220",
 const SELL_FEEDBACK_SYSTEM = `[01 ROLE]
 너는 주린이를 위한 매도 피드백 코치다.
 이익이든 손실이든 학습 기회로 차분하게 짚어준다.
-중요: 출력 3줄 안에 주린이가 모를 만한 주식 용어는 반드시 "용어*" 형식(뒤에 별표 1개)으로 표기한다. 최소 2개 이상의 용어에 별표를 붙여라.
 
 [02 TASK]
 <input> 안의 종목·매수가·매도가·보유 기간·실현 손익을 보고 매도 결정에 대한 3줄 피드백을 만들어줘.
@@ -2045,15 +2083,21 @@ const SELL_FEEDBACK_SYSTEM = `[01 ROLE]
 [05 EXAMPLES]
 입력 — 종목: 삼성전자 / 매수가: 70,000원 × 10주 / 매도가: 75,000원 × 10주 / 보유기간: 30일 / 손익: +50,000원 (+7.14%)
 출력
-- 30일 만에 +7.14% 수익 실현, 안정적인 단기* 매매였어요
-- 변동성* 큰 구간 전에 정리한 좋은 타이밍 결정
-- 다음엔 분할 매도* 방식도 시도해 보면 좋아요
+- 30일 만에 +7.14% 수익 실현, 안정적인 단기 매매였어요
+- 변동성 큰 구간 전에 정리한 좋은 타이밍 결정
+- 다음엔 분할 매도 방식도 시도해 보면 좋아요
 
 입력 — 종목: 카카오 / 매수가: 42,000원 × 5주 / 매도가: 38,000원 × 5주 / 보유기간: 15일 / 손익: -20,000원 (-9.52%)
 출력
-- 손절* 결정, 단기 -9.52% 손실 확정
-- 빠른 손절은 큰 손실을 막는 좋은 습관*이에요
+- 손절 결정, 단기 -9.52% 손실 확정
+- 빠른 손절은 큰 손실을 막는 좋은 습관이에요
 - 다음 매수 전 손절가를 미리 정해보세요
+
+입력 — 종목: 애플 / 매수가: $220 × 3주 / 매도가: $235 × 3주 / 보유기간: 120일 / 손익: +$45 (+6.82%)
+출력
+- 120일 보유로 +6.82% 수익, 차분히 기다린 결과예요
+- 단기 흔들림에 흔들리지 않은 게 좋은 판단이었어요
+- 다음엔 목표 수익률을 미리 정하고 들어가 보세요
 
 [06 EDGE CASES]
 - 응답 형식 이상(3줄 미만·초과) → 반드시 3줄로 재구성
@@ -2366,7 +2410,7 @@ async function loadRecommendation() {
           ${g.fit ? `<div class="rec-guide-row"><span class="rec-guide-label">적합도</span><span class="rec-guide-text">${renderTerms(g.fit)}</span></div>` : ''}
           ${g.strength ? `<div class="rec-guide-row"><span class="rec-guide-label">강점</span><span class="rec-guide-text">${renderTerms(g.strength)}</span></div>` : ''}
           ${g.caution ? `<div class="rec-guide-row"><span class="rec-guide-label">주의</span><span class="rec-guide-text">${renderTerms(g.caution)}</span></div>` : ''}
-          <button class="btn rec-buy-btn" onclick="event.stopPropagation(); goToBuy(${idx})">매수하기</button>
+          <button class="btn rec-buy-btn" onclick="event.stopPropagation(); goToBuy(${idx})">구매하기</button>
         </div>
       ` : '';
 
@@ -2566,7 +2610,7 @@ function updateBuyUI(opts = {}) {
   const btn = document.getElementById('buy-btn');
   const btnText = document.getElementById('buy-btn-text');
   if (price > 0 && _buyQty >= QTY_MIN) {
-    btnText.innerHTML = `${formatPrice(total, cur)} 가상 매수하기`;
+    btnText.textContent = '구매하기';
     btn.disabled = false;
   } else if (price > 0) {
     btnText.textContent = '수량을 입력해주세요';
@@ -2582,7 +2626,7 @@ function updateBuySummary() { updateBuyUI(); }
 
 function validateBuy() {
   if (!recommendation?.price) {
-    setQtyError('시세를 가져올 수 없어 매수할 수 없어요');
+    setQtyError('시세를 가져올 수 없어 구매할 수 없어요');
     return false;
   }
   if (_buyQty < QTY_MIN || _buyQty > QTY_MAX) {
@@ -2609,7 +2653,7 @@ async function handleBuy() {
   const qtyDisplay = formatQty(qty);
 
   // 타이틀
-  document.getElementById('fb-title').innerHTML = `<span>${escapeHtml(stockName)}</span> 매수 완료`;
+  document.getElementById('fb-title').innerHTML = `<span>${escapeHtml(stockName)}</span> 구매 완료`;
 
   // 요약 카드 채우기
   document.getElementById('fb-stockname').textContent = stockName;
@@ -2638,6 +2682,7 @@ async function handleBuy() {
   document.getElementById('fb-summary-card').style.display = 'block';
   document.getElementById('fb-loading').style.display = 'block';
   document.getElementById('fb-result').innerHTML = '';
+  document.getElementById('fb-actions').style.display = 'none';
 
   showScreen('screen-feedback', 4);
 
@@ -2695,21 +2740,22 @@ function showFeedback(lines) {
     </div>
   `).join('');
 
-  // 복사용 텍스트 (종목명 + 3줄, 별표 마커 제거)
+  // 복사용 텍스트 (매수 내역 + 종목명 + 3줄, 별표 마커 제거)
   const stockName = recommendation?.name || '';
-  const header = stockName ? `[${stockName}] 투자 가이드\n` : '투자 가이드\n';
-  lastFeedbackCopyText = header + cleaned
+  const sumQty = document.getElementById('fb-qty').textContent;
+  const sumPrice = document.getElementById('fb-price').textContent;
+  const sumTotal = document.getElementById('fb-total').textContent;
+  const header = `[${stockName || '종목'}] 구매 완료\n구매 수량: ${sumQty}\n구매가: ${sumPrice}\n총 투자 금액: ${sumTotal}\n`;
+  lastFeedbackCopyText = header + '\n[투자 가이드]\n' + cleaned
     .map((t, i) => `${i + 1}. ${titles[i] || ''}: ${stripTermMarkers(t)}`)
     .join('\n');
 
   document.getElementById('fb-result').innerHTML = `
     <div class="fb-section-title">투자 가이드</div>
     <div class="fb-cards">${cardsHtml}</div>
-    <button class="fb-copy-bar" id="fb-copy-btn" onclick="copyFeedback()">
-      <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-      결과 복사하기
-    </button>
+    <div class="fb-capture-foot">${stockName ? escapeHtml(stockName) + ' · ' : ''}bedit 가상 투자 연습</div>
   `;
+  document.getElementById('fb-actions').style.display = '';
 
   // 투자 기록 저장
   saveInvestment({
@@ -2791,146 +2837,9 @@ function escapeHtml(s) {
   }[c]));
 }
 
-/* ============== Stock term glossary ============== */
-const TERM_GLOSSARY = {
-  '횡보': '주가가 큰 변화 없이 일정 범위에서 오르내리는 상태',
-  '변동성': '가격이 얼마나 크게 오르내리는지 나타내는 정도',
-  '분할 매수': '한 번에 사지 않고 여러 번 나눠서 사는 방법',
-  '분할 매도': '한 번에 팔지 않고 여러 번 나눠서 파는 방법',
-  '모멘텀': '주가 흐름이 이어지려는 힘·추세',
-  '업황': '해당 산업의 전반적인 사업 환경·경기',
-  '반등': '하락하던 주가가 다시 오르는 움직임',
-  '리스크': '예상치 못한 손실이 발생할 가능성',
-  '규제 리스크': '정부 규제로 사업이 어려워질 가능성',
-  '고평가': '실적 대비 주가가 비싸다는 평가',
-  '저평가': '실적 대비 주가가 싸다는 평가',
-  '실적': '회사의 매출·영업이익 등 경영 성과',
-  '배당': '회사가 이익을 주주에게 나눠 주는 돈',
-  '배당락': '배당 권리가 사라져 주가가 그만큼 떨어지는 현상',
-  '시총': '발행 주식 수 × 현재가. 회사의 시장 가치',
-  '평단가': '같은 종목을 여러 번 산 평균 매수 가격',
-  '손절': '손실을 확정 짓고 매도하는 것',
-  '익절': '이익을 확정 짓고 매도하는 것',
-  '추세': '주가가 일정 방향으로 움직이는 흐름',
-  '거래량': '일정 기간 동안 거래된 주식 수',
-  '등락률': '전일 대비 가격 변화 비율',
-  'PER': '주가 ÷ 주당순이익. 높을수록 비싸게 거래된다는 뜻',
-  'PBR': '주가 ÷ 주당순자산. 1배 이하면 청산가치보다 싸다는 뜻',
-  'EPS': '주당 순이익. 한 주가 1년에 벌어들인 이익',
-  'ROE': '자기자본이익률. 회사가 자본으로 얼마나 잘 버는지',
-  '시가': '장 시작 시점의 가격',
-  '종가': '장 마감 시점의 가격',
-  '갭': '전일 종가와 당일 시가의 차이',
-  '액면분할': '주식 1주를 여러 주로 쪼개는 것',
-  '유상증자': '회사가 돈을 받고 주식을 새로 발행하는 것',
-  '무상증자': '돈 없이 주식을 새로 발행해 기존 주주에게 나눠 주는 것',
-  '공모주': '신규 상장 시 일반 투자자에게 배정되는 주식',
-  '상장': '회사 주식을 거래소에서 사고팔 수 있게 등록하는 것',
-  '대형주': '시가총액이 큰 회사 주식. 보통 상위 100위권',
-  '중형주': '시가총액 중간 규모의 회사 주식',
-  '소형주': '시가총액이 작은 회사 주식. 변동성 큼',
-  '성장주': '향후 매출·이익 성장 기대가 큰 종목',
-  '가치주': '실적 대비 저평가됐다고 보는 종목',
-  '배당주': '배당을 꾸준히 지급하는 종목',
-  '기술주': 'IT·반도체·플랫폼 등 기술 기반 회사 주식',
-  '금융주': '은행·보험·증권사 등 금융 회사 주식',
-  '테마주': '특정 이슈·트렌드와 묶여 거래되는 종목',
-  '환율 변동성': '원·달러 환율이 크게 변하는 정도',
-  '단기 반등': '짧은 기간에 일어나는 주가 회복',
-  '분산투자': '여러 종목·자산에 나눠 투자해 위험을 줄이는 방법',
-  '집중투자': '특정 종목·자산에 자금을 모아 투자하는 방법',
-  '장기투자': '몇 년 이상 길게 보유하는 투자',
-  '단기투자': '며칠~몇 주 짧게 보유하는 투자',
-  '리밸런싱': '포트폴리오 비중을 원래 목표 비율로 다시 맞추는 것',
-  '포트폴리오': '보유 중인 모든 자산·종목의 구성',
-  '레버리지': '빌린 돈으로 투자 규모를 키우는 것. 위험도 커짐',
-  '공매도': '주식을 빌려서 먼저 팔고 나중에 다시 사서 갚는 거래',
-  '예수금': '증권 계좌에 들어 있지만 아직 주식을 사지 않은 현금',
-  '시초가': '장이 시작할 때 처음 거래된 가격',
-  '상한가': '하루 동안 오를 수 있는 최대 가격 (국내 +30%)',
-  '하한가': '하루 동안 내릴 수 있는 최저 가격 (국내 -30%)',
-  '실적시즌': '기업들이 분기 실적을 발표하는 시기',
-  '컨센서스': '여러 증권사 애널리스트 전망의 평균',
-  '서킷브레이커': '주가가 급락할 때 거래를 일시 중단시키는 제도',
-  '사이드카': '선물 가격 급변 시 현물 거래를 5분간 제한하는 제도',
-  '액티브': '시장 평균보다 높은 수익을 노리는 적극 운용 방식',
-  '패시브': '지수를 그대로 따라가는 소극 운용 방식',
-  'ETF': '여러 종목을 묶어 거래소에서 주식처럼 사고파는 펀드',
-  '시장가': '현재 가격으로 즉시 거래하는 주문',
-  '지정가': '원하는 가격을 지정해서 내는 주문',
-  '갭상승': '전일 종가보다 높은 가격에 장이 시작되는 것',
-  '갭하락': '전일 종가보다 낮은 가격에 장이 시작되는 것',
-  '호가': '사거나 팔 때 제시하는 가격',
-
-  // 배당·실적 관련
-  '고배당': '주가 대비 배당 비율이 높은 종목·정책',
-  '저배당': '배당 비율이 낮은 종목·정책',
-  '배당수익률': '연간 배당금 ÷ 주가. 배당이 주가의 몇 %인지',
-  '자사주': '회사가 보유한 자기 회사 주식',
-  '자사주 매입': '회사가 자기 주식을 사들이는 것. 보통 주가 부양 효과',
-  '자사주 소각': '회사가 매입한 자사주를 없애 유통 주식 수를 줄이는 것',
-  '영업이익': '본업으로 번 이익 (매출 - 매출원가·판관비)',
-  '매출': '제품·서비스를 팔아서 얻은 총수입',
-  '당기순이익': '모든 비용·세금까지 빼고 남은 최종 이익',
-  '어닝서프라이즈': '실적이 시장 예상보다 크게 잘 나온 경우',
-  '어닝쇼크': '실적이 시장 예상보다 크게 부진한 경우',
-  '흑자': '이익이 발생한 상태',
-  '적자': '손실이 발생한 상태',
-  '분기 실적': '3개월 단위로 발표하는 회사 성과',
-
-  // 차트·기술 분석
-  '이동평균선': '일정 기간 평균 주가를 선으로 이은 차트. 추세 파악용',
-  '이평선': '이동평균선 줄임말',
-  '골든크로스': '단기 이동평균선이 장기선을 위로 뚫는 강세 신호',
-  '데드크로스': '단기 이동평균선이 장기선을 아래로 뚫는 약세 신호',
-  '지지선': '하락하던 주가가 잘 멈추는 가격대',
-  '저항선': '상승하던 주가가 잘 막히는 가격대',
-  '박스권': '일정 가격대 안에서 등락을 반복하는 구간',
-  '매물대': '과거 거래가 많이 쌓인 가격대. 저항·지지 역할',
-  'RSI': '주가 과열·과매도를 0~100으로 보는 지표. 70 이상 과열',
-  'MACD': '단·장기 이동평균 차이로 추세 전환을 보는 지표',
-  '거래량 급증': '평소보다 거래량이 크게 늘어난 상태',
-
-  // 시장 수급
-  '기관': '연기금·자산운용사 등 기관투자자',
-  '외인': '외국인 투자자',
-  '개인': '개인 투자자',
-  '순매수': '산 금액이 판 금액보다 많은 상태',
-  '순매도': '판 금액이 산 금액보다 많은 상태',
-  '수급': '수요(사려는 힘)와 공급(팔려는 힘)의 균형',
-
-  // 평가·전망
-  '목표주가': '증권사가 제시하는 향후 도달 예상 가격',
-  '투자의견': '매수·보유·매도 같은 증권사 의견',
-  '리포트': '증권사 애널리스트가 발행하는 분석 보고서',
-  '밸류에이션': '주가가 적정한지 판단하는 가치 평가',
-  '프리미엄': '비슷한 기업 대비 더 비싸게 거래되는 정도',
-  '디스카운트': '비슷한 기업 대비 더 싸게 거래되는 정도'
-};
-
 function renderTerms(text) {
-  const reEscape = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  let html = escapeHtml(text);
-
-  // 1단계: 공백 포함 다중 단어 용어를 사전에서 우선 치환
-  for (const term of Object.keys(TERM_GLOSSARY)) {
-    if (!term.includes(' ')) continue;
-    const re = new RegExp(reEscape(term) + '\\*', 'g');
-    html = html.replace(re, () =>
-      `<span class="term" tabindex="0" data-tip="${escapeHtml(TERM_GLOSSARY[term])}">'${term}'</span>`
-    );
-  }
-
-  // 2단계: 단어 단위 용어(공백 없음) regex로 치환
-  // 사전에 있는 용어만 따옴표+툴팁 부착. 없으면 별표만 제거하고 평문 처리.
-  html = html.replace(/([가-힣A-Za-z0-9]+)\*/g, (_, term) => {
-    const tip = TERM_GLOSSARY[term];
-    return tip
-      ? `<span class="term" tabindex="0" data-tip="${escapeHtml(tip)}">'${term}'</span>`
-      : term;
-  });
-
-  return html;
+  // 용어 툴팁 기능 제거 — '용어*' 마크업의 별표만 떼고 평문 처리
+  return escapeHtml(text).replace(/\*/g, '');
 }
 
 function stripTermMarkers(text) {
@@ -3035,12 +2944,12 @@ function renderHistory() {
       const plClass = plUp ? 'up' : (plDown ? 'down' : '');
       return `
         <div class="history-item">
-          <span class="history-item-status sold">매도 완료</span>
+          <span class="history-item-status sold">판매 완료</span>
           <div class="history-item-head">
             <div class="history-item-name">${escapeHtml(r.name || '—')}</div>
             <div class="history-item-date">${formatHistoryDate(r.sell_date || r.date)}</div>
           </div>
-          <div class="history-item-detail">매수 ${buyPriceStr} → 매도 ${sellPriceStr} (${qtyDisp}주)</div>
+          <div class="history-item-detail">구매 ${buyPriceStr} → 판매 ${sellPriceStr} (${qtyDisp}주)</div>
           <div class="history-item-pl ${plClass}">
             실현 손익 ${plSign}${formatPrice(Math.abs(pl), r.currency)} (${plSign}${plPct.toFixed(2)}%)
           </div>
@@ -3058,7 +2967,7 @@ function renderHistory() {
         </div>
         <div class="history-item-meta">${buyPriceStr} × ${qtyDisp}주 = <strong>${buyTotalStr}</strong></div>
         <div class="history-item-current" data-current>현재가 불러오는 중…</div>
-        <button class="history-sell-btn" onclick="goToSell(${r.id})">매도하기</button>
+        <button class="history-sell-btn" onclick="goToSell(${r.id})">판매하기</button>
       </div>
     `;
   }).join('');
@@ -3137,18 +3046,19 @@ async function goToSell(recordId) {
   const record = records.find((r) => Number(r.id) === targetId);
   if (!record) {
     console.error('[goToSell] 기록을 찾을 수 없음', { recordId, allIds: records.map(r => r.id) });
-    alert('해당 매수 기록을 찾을 수 없어요. 새로고침 후 다시 시도해주세요.');
+    alert('해당 구매 기록을 찾을 수 없어요. 새로고침 후 다시 시도해주세요.');
     return;
   }
   if (record.status === 'sold') {
-    alert('이미 매도된 종목이에요.');
+    alert('이미 판매된 종목이에요.');
     return;
   }
   _currentSellPosition = record;
   _sellLivePrice = null;
 
   document.getElementById('sell-stockname').textContent = record.name || '—';
-  document.getElementById('sell-buy-price').textContent =
+  // formatPrice가 USD에 <span class="krw-conv"> 마크업을 붙이므로 innerHTML
+  document.getElementById('sell-buy-price').innerHTML =
     record.price != null ? formatPrice(record.price, record.currency) : '—';
   document.getElementById('sell-buy-qty').textContent = formatQty(record.qty) + '주';
   document.getElementById('sell-buy-date').textContent = formatHistoryDate(record.date);
@@ -3182,7 +3092,7 @@ async function goToSell(recordId) {
     // 손익 계산
     updateSellPL(info.price);
     // CTA 활성화
-    document.getElementById('sell-btn-text').innerHTML = `${formatPrice(info.price * record.qty, record.currency)}에 매도하기`;
+    document.getElementById('sell-btn-text').textContent = '판매하기';
     btn.disabled = false;
   } catch (e) {
     document.getElementById('sell-current-price').textContent = '시세 불러오기 실패';
@@ -3245,7 +3155,7 @@ async function handleSell() {
   const holdingDays = Math.max(1, Math.round((now - buyDate) / 86400000));
 
   // 매도 완료 화면 헤더·요약 채우기
-  document.getElementById('sfb-title').innerHTML = `<span>${escapeHtml(r.name)}</span> 매도 완료`;
+  document.getElementById('sfb-title').innerHTML = `<span>${escapeHtml(r.name)}</span> 판매 완료`;
   document.getElementById('sfb-stockname').textContent = r.name;
   document.getElementById('sfb-buy-price').innerHTML = formatPrice(r.price, r.currency);
   document.getElementById('sfb-sell-price').innerHTML = formatPrice(sellPrice, r.currency);
@@ -3257,6 +3167,7 @@ async function handleSell() {
   document.getElementById('sfb-summary-card').style.display = 'block';
   document.getElementById('sfb-loading').style.display = 'block';
   document.getElementById('sfb-result').innerHTML = '';
+  document.getElementById('sfb-actions').style.display = 'none';
   showScreen('screen-sell-feedback', 0);
 
   // 매도 가이드 호출
@@ -3296,7 +3207,7 @@ async function handleSell() {
 let lastSellCopyText = '';
 
 function renderSellFeedback(lines) {
-  const titles = ['매도 결과', '배운 점', '다음 액션'];
+  const titles = ['판매 결과', '배운 점', '다음 액션'];
   const kinds = ['status', 'risk', 'action'];
   const icons = [
     '<svg viewBox="0 0 24 24"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="14 7 21 7 21 14"/></svg>',
@@ -3315,19 +3226,20 @@ function renderSellFeedback(lines) {
   `).join('');
 
   const r = _currentSellPosition;
-  const header = r ? `[${r.name}] 매도 피드백\n` : '매도 피드백\n';
-  lastSellCopyText = header + lines
+  const sumBuy = document.getElementById('sfb-buy-price').textContent;
+  const sumSell = document.getElementById('sfb-sell-price').textContent;
+  const sumPl = document.getElementById('sfb-pl').textContent;
+  const header = `[${r ? r.name : '종목'}] 판매 완료\n구매가: ${sumBuy}\n판매가: ${sumSell}\n실현 손익: ${sumPl}\n`;
+  lastSellCopyText = header + '\n[판매 가이드]\n' + lines
     .map((t, i) => `${i + 1}. ${titles[i] || ''}: ${stripTermMarkers(t)}`)
     .join('\n');
 
   document.getElementById('sfb-result').innerHTML = `
-    <div class="fb-section-title">매도 가이드</div>
+    <div class="fb-section-title">판매 가이드</div>
     <div class="fb-cards">${cardsHtml}</div>
-    <button class="fb-copy-bar" id="sfb-copy-btn" onclick="copySellFeedback()">
-      <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-      결과 복사하기
-    </button>
+    <div class="fb-capture-foot">${r && r.name ? escapeHtml(r.name) + ' · ' : ''}bedit 가상 투자 연습</div>
   `;
+  document.getElementById('sfb-actions').style.display = '';
 }
 
 async function copySellFeedback() {
@@ -3351,6 +3263,53 @@ async function copySellFeedback() {
     btn.innerHTML = copied;
     btn.classList.add('copied');
     setTimeout(() => { btn.innerHTML = def; btn.classList.remove('copied'); }, 1500);
+  }
+}
+
+// 가이드 카드를 PNG 이미지로 저장 (html2canvas)
+async function saveFeedbackCard(kind) {
+  const captureId = kind === 'sell' ? 'sfb-capture' : 'fb-capture';
+  const btnId = kind === 'sell' ? 'sfb-save-btn' : 'fb-save-btn';
+  const el = document.getElementById(captureId);
+  const btn = document.getElementById(btnId);
+  if (!el) return;
+  if (typeof html2canvas === 'undefined') {
+    if (btn) {
+      const orig = btn.innerHTML;
+      btn.innerHTML = '저장 기능 로딩 실패';
+      setTimeout(() => { btn.innerHTML = orig; }, 1800);
+    }
+    return;
+  }
+  const bg = (getComputedStyle(document.documentElement)
+    .getPropertyValue('--card-bg') || '#1f2026').trim();
+  el.classList.add('capturing');
+  try {
+    const canvas = await html2canvas(el, { backgroundColor: bg, scale: 2 });
+    const name = kind === 'sell'
+      ? ((_currentSellPosition && _currentSellPosition.name) || '판매')
+      : ((recommendation && recommendation.name) || '구매');
+    const label = kind === 'sell' ? '판매가이드' : '투자가이드';
+    const link = document.createElement('a');
+    link.download = `bedit_${name}_${label}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    if (btn) {
+      const saved = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> 저장됨`;
+      const def = `<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 카드 저장하기`;
+      btn.innerHTML = saved;
+      btn.classList.add('copied');
+      setTimeout(() => { btn.innerHTML = def; btn.classList.remove('copied'); }, 1500);
+    }
+  } catch (e) {
+    console.error('카드 저장 실패', e);
+    if (btn) {
+      const orig = btn.innerHTML;
+      btn.innerHTML = '저장 실패 — 다시 시도';
+      setTimeout(() => { btn.innerHTML = orig; }, 1800);
+    }
+  } finally {
+    el.classList.remove('capturing');
   }
 }
 
