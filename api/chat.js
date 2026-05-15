@@ -14,14 +14,23 @@ const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || "")
   .map(normalizeOrigin)
   .filter(Boolean);
 
-function isAllowed(origin) {
+function isSameHost(origin, reqHost) {
+  if (!origin || !reqHost) return false;
+  try {
+    return new URL(origin).host.toLowerCase() === String(reqHost).toLowerCase();
+  } catch (e) { return false; }
+}
+
+function isAllowed(origin, reqHost) {
   if (!ALLOWED_ORIGINS.length) return true; // 화이트리스트 미설정 = 모두 허용
-  return ALLOWED_ORIGINS.includes(normalizeOrigin(origin));
+  if (ALLOWED_ORIGINS.includes(normalizeOrigin(origin))) return true;
+  if (isSameHost(origin, reqHost)) return true; // 같은 도메인끼리는 항상 허용
+  return false;
 }
 
 function applyCors(req, res) {
   const origin = req.headers.origin;
-  if (!origin || isAllowed(origin)) {
+  if (!origin || isAllowed(origin, req.headers.host)) {
     res.setHeader("Access-Control-Allow-Origin", origin || "*");
     res.setHeader("Vary", "Origin");
   }
@@ -41,7 +50,7 @@ module.exports = async function handler(req, res) {
 
   // Origin 화이트리스트 (있을 때만 검사)
   const origin = req.headers.origin;
-  if (origin && !isAllowed(origin)) {
+  if (origin && !isAllowed(origin, req.headers.host)) {
     return res.status(403).json({ error: "origin_not_allowed", got: origin });
   }
 
