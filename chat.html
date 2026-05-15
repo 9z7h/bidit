@@ -1198,6 +1198,14 @@
     font-weight: 500;
     margin-left: 4px;
   }
+  .fx-note {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    font-weight: 500;
+    margin-top: 2px;
+    letter-spacing: -0.01em;
+  }
+  .fx-note:empty { display: none; }
   .fb-summary-total {
     font-size: 26px;
     font-weight: 700;
@@ -1654,6 +1662,7 @@
       <div class="stock-card-head">
         <div>
           <div class="stock-name" id="buy-stockname">—</div>
+          <div class="fx-note" id="buy-fx-note"></div>
         </div>
         <div class="status-chip flat" id="status-chip">—</div>
       </div>
@@ -1714,6 +1723,7 @@
         <div class="stock-card-head">
           <div>
             <div class="stock-name" id="fb-stockname">—</div>
+            <div class="fx-note" id="fb-fx-note"></div>
           </div>
           <div class="status-chip flat" id="fb-status-chip">—</div>
         </div>
@@ -1784,6 +1794,7 @@
       <div class="stock-card-head">
         <div>
           <div class="stock-name" id="sell-stockname">—</div>
+          <div class="fx-note" id="sell-fx-note"></div>
         </div>
         <div class="status-chip flat" id="sell-status-chip">—</div>
       </div>
@@ -1843,6 +1854,7 @@
         <div class="stock-card-head">
           <div>
             <div class="stock-name" id="sfb-stockname">—</div>
+            <div class="fx-note" id="sfb-fx-note"></div>
           </div>
         </div>
         <div class="stock-card-divider"></div>
@@ -2276,23 +2288,58 @@ async function fetchCurrentPrice(code, market) {
 
 /* ============== USD → KRW 환율 캐시 ============== */
 let _usdKrwRate = null;
+let _usdKrwRateAt = 0;
+const FX_TTL_MS = 30 * 60 * 1000; // 30분
+let _fxInflight = null;
 
-async function fetchUsdKrwRate() {
-  if (_usdKrwRate) return _usdKrwRate;
-  try {
-    const ctrl = new AbortController();
-    const t = setTimeout(() => ctrl.abort(), 8000);
-    const res = await fetch('https://open.er-api.com/v6/latest/USD', { signal: ctrl.signal });
-    clearTimeout(t);
-    if (!res.ok) throw new Error('FX_HTTP');
-    const data = await res.json();
-    const rate = data?.rates?.KRW;
-    if (rate && rate > 0) _usdKrwRate = rate;
-  } catch (e) {}
-  return _usdKrwRate;
+async function fetchUsdKrwRate(force = false) {
+  if (!force && _usdKrwRate && (Date.now() - _usdKrwRateAt) < FX_TTL_MS) return _usdKrwRate;
+  if (_fxInflight) return _fxInflight;
+  _fxInflight = (async () => {
+    try {
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), 8000);
+      const res = await fetch('https://open.er-api.com/v6/latest/USD', { signal: ctrl.signal });
+      clearTimeout(t);
+      if (!res.ok) throw new Error('FX_HTTP');
+      const data = await res.json();
+      const rate = data?.rates?.KRW;
+      if (rate && rate > 0) {
+        _usdKrwRate = rate;
+        _usdKrwRateAt = Date.now();
+        refreshVisibleFxNotes();
+      }
+    } catch (e) {}
+    _fxInflight = null;
+    return _usdKrwRate;
+  })();
+  return _fxInflight;
 }
 // 앱 시작 시 환율 한 번 받아두기
 fetchUsdKrwRate();
+// 탭 복귀 시 캐시가 오래됐으면 다시 받기
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') fetchUsdKrwRate();
+});
+
+function setFxNote(elId, currency) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  el.dataset.currency = currency || '';
+  if (currency === 'USD' && _usdKrwRate) {
+    el.textContent = `1$ = ${_usdKrwRate.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}원`;
+  } else {
+    el.textContent = '';
+  }
+}
+
+function refreshVisibleFxNotes() {
+  document.querySelectorAll('.fx-note').forEach(el => {
+    if (el.dataset.currency === 'USD' && _usdKrwRate) {
+      el.textContent = `1$ = ${_usdKrwRate.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}원`;
+    }
+  });
+}
 
 function formatPrice(value, currency) {
   if (value == null) return '';
@@ -2300,7 +2347,7 @@ function formatPrice(value, currency) {
     const usdStr = '$' + Number(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     if (_usdKrwRate) {
       const krw = Math.round(Number(value) * _usdKrwRate);
-      return usdStr + ' <span class="krw-conv">(약 ' + krw.toLocaleString() + '원)</span>';
+      return usdStr + ' <span class="krw-conv">(' + krw.toLocaleString() + '원)</span>';
     }
     return usdStr;
   }
@@ -2383,7 +2430,11 @@ async function loadRecommendation() {
     const stocks = data.stocks.slice(0, 3).filter(s => s && s.name && s.code && s.reason);
     if (stocks.length === 0) throw new Error('PARSE_ERROR');
 
-    const priced = await Promise.all(stocks.map(async (s) => {
+
+
+    const allStocks = [TESLA, ...stocks];
+
+    const priced = await Promise.all(allStocks.map(async (s) => {
       const market = s.market === 'US' ? 'US' : 'KR';
       try {
         const info = await fetchCurrentPrice(s.code, market);
@@ -2479,6 +2530,7 @@ function goToBuy(idx) {
   recommendation = recommendations[idx];
   const r = recommendation;
   document.getElementById('buy-stockname').textContent = r.name;
+  setFxNote('buy-fx-note', r.currency);
 
   // 가격 표시
   const priceEl = document.getElementById('price-display');
@@ -2659,6 +2711,7 @@ async function handleBuy() {
 
   // 요약 카드 채우기
   document.getElementById('fb-stockname').textContent = stockName;
+  setFxNote('fb-fx-note', currency);
   document.getElementById('fb-qty').textContent = qtyDisplay + '주';
   document.getElementById('fb-price').innerHTML = formatPrice(price, currency);
   document.getElementById('fb-total').innerHTML = formatPrice(price * qty, currency);
@@ -3059,6 +3112,7 @@ async function goToSell(recordId) {
   _sellLivePrice = null;
 
   document.getElementById('sell-stockname').textContent = record.name || '—';
+  setFxNote('sell-fx-note', record.currency);
   // formatPrice가 USD에 <span class="krw-conv"> 마크업을 붙이므로 innerHTML
   document.getElementById('sell-buy-price').innerHTML =
     record.price != null ? formatPrice(record.price, record.currency) : '—';
@@ -3159,6 +3213,7 @@ async function handleSell() {
   // 매도 완료 화면 헤더·요약 채우기
   document.getElementById('sfb-title').innerHTML = `<span>${escapeHtml(r.name)}</span> 판매 완료`;
   document.getElementById('sfb-stockname').textContent = r.name;
+  setFxNote('sfb-fx-note', r.currency);
   document.getElementById('sfb-buy-price').innerHTML = formatPrice(r.price, r.currency);
   document.getElementById('sfb-sell-price').innerHTML = formatPrice(sellPrice, r.currency);
   const totalEl = document.getElementById('sfb-pl');
