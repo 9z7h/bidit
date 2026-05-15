@@ -2430,21 +2430,7 @@ async function loadRecommendation() {
     const stocks = data.stocks.slice(0, 3).filter(s => s && s.name && s.code && s.reason);
     if (stocks.length === 0) throw new Error('PARSE_ERROR');
 
-    const TESLA = {
-      name: '테슬라',
-      code: 'TSLA.O',
-      market: 'US',
-      reason: '전기차·자율주행 대표 성장주. 변동성 학습용 참고 종목.',
-      guide: {
-        fit: '성장형 투자자에게 적합. 단기 변동성이 큰 편이라 분할 매수 고려.',
-        strength: 'EV·자율주행·에너지·로보틱스 등 멀티 성장 동력 보유.',
-        caution: '실적 변동성·CEO 리스크·고밸류에이션 부담 함께 점검 필요.'
-      }
-    };
-
-    const allStocks = [TESLA, ...stocks];
-
-    const priced = await Promise.all(allStocks.map(async (s) => {
+    const priced = await Promise.all(stocks.map(async (s) => {
       const market = s.market === 'US' ? 'US' : 'KR';
       try {
         const info = await fetchCurrentPrice(s.code, market);
