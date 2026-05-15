@@ -143,8 +143,8 @@
   .main-inner {
     flex: 1;
     display: flex;
-    align-items: flex-start;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
     padding: 32px 16px 32px;
   }
 
@@ -166,7 +166,34 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 12px;
     margin-bottom: 18px;
+  }
+  .seed-card {
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    margin-top: 10px;
+    margin-bottom: 12px;
+    border: 0px solid var(--border, rgba(255,255,255,0.08));
+    border-radius: 14px;
+    letter-spacing: -0.025em;
+    box-sizing: border-box;
+    background: #1f2026;
+  }
+  .seed-card-label {
+    color: var(--text-tertiary);
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .seed-card-value {
+    color: var(--text);
+    font-size: 16px;
+    font-weight: 700;
+    font-feature-settings: 'tnum';
   }
   .progress {
     display: flex;
@@ -257,7 +284,7 @@
     font-size: 32px;
     font-weight: 800;
     line-height: 1.32;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.025em;
     color: #fff;
   }
   .intro-title .intro-accent { color: var(--primary); }
@@ -812,7 +839,7 @@
     font-size: 0.7em;
     font-weight: 700;
     color: #ffffff;
-    letter-spacing: 0.05em;
+    letter-spacing: -0.025em;
     isolation: isolate;
   }
   .loader-letter {
@@ -1203,9 +1230,32 @@
     color: var(--text-tertiary);
     font-weight: 500;
     margin-top: 2px;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.025em;
   }
   .fx-note:empty { display: none; }
+  .seed-line {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-top: 10px;
+    padding: 0 4px;
+    font-size: 13px;
+    letter-spacing: -0.025em;
+  }
+  .seed-label {
+    color: var(--text-tertiary);
+    font-weight: 500;
+  }
+  .seed-value {
+    color: var(--text);
+    font-weight: 700;
+    font-feature-settings: 'tnum';
+  }
+  .seed-total {
+    color: var(--text-tertiary);
+    font-weight: 500;
+    font-feature-settings: 'tnum';
+  }
   .fb-summary-total {
     font-size: 26px;
     font-weight: 700;
@@ -1579,6 +1629,11 @@
   <p class="intro-foot">실제 돈이 들지 않는 가상 투자 서비스예요.</p>
 </section>
 
+<div class="seed-card" id="global-seed" style="display:none;">
+  <span class="seed-card-label">내 시드</span>
+  <span class="seed-card-value" id="global-seed-value">—</span>
+</div>
+
 <div class="card" id="app-card" style="display:none;">
   <div class="topbar">
     <div class="tab-toggle">
@@ -1693,6 +1748,12 @@
     <div class="total-card">
       <span class="total-label">총 투자 금액</span>
       <span class="total-value"><span id="buy-total">0</span><span class="total-unit" id="buy-total-unit">원</span></span>
+    </div>
+
+    <div class="seed-line" id="seed-line">
+      <span class="seed-label">남은 시드</span>
+      <span class="seed-value" id="seed-remaining">—</span>
+      <span class="seed-total" id="seed-total"></span>
     </div>
 
     <div class="qty-error" id="err-qty"></div>
@@ -2511,6 +2572,32 @@ let _buyQty = 1;
 const QTY_MIN = 1;
 const QTY_MAX = 999;
 
+// 시드 한도
+const SEED_KRW = 2_000_000;
+
+function toKrwCost(price, qty, currency) {
+  if (!price || !qty) return 0;
+  const v = Number(price) * Number(qty);
+  if (currency === 'USD') return _usdKrwRate ? v * _usdKrwRate : v * 1500; // 환율 미수신 시 대략적 가드
+  return v;
+}
+
+function getInvestedKrw() {
+  return getInvestments()
+    .filter(r => (r.status || 'holding') === 'holding')
+    .reduce((sum, r) => sum + toKrwCost(r.price, r.qty, r.currency || 'KRW'), 0);
+}
+
+function getAvailableKrw() {
+  return Math.max(0, SEED_KRW - getInvestedKrw());
+}
+
+function updateGlobalSeed() {
+  const v = document.getElementById('global-seed-value');
+  if (!v) return;
+  v.textContent = getAvailableKrw().toLocaleString() + '원';
+}
+
 function setQtyError(msg) {
   const el = document.getElementById('err-qty');
   if (el) el.textContent = msg || '';
@@ -2657,9 +2744,26 @@ function updateBuyUI(opts = {}) {
     unitEl.textContent = '';
   }
 
+  // 시드 표시 + 한도 초과 판단
+  const available = getAvailableKrw();
+  const costKrw = toKrwCost(price, _buyQty, cur);
+  const remainingAfter = available - costKrw;
+  const overBudget = price > 0 && _buyQty >= QTY_MIN && costKrw > available;
+  const seedLine = document.getElementById('seed-line');
+  const seedRemaining = document.getElementById('seed-remaining');
+  const seedTotal = document.getElementById('seed-total');
+  if (seedLine && seedRemaining && seedTotal) {
+    const shown = Math.max(0, remainingAfter);
+    seedRemaining.textContent = shown.toLocaleString() + '원';
+    seedTotal.textContent = `/ ${SEED_KRW.toLocaleString()}원`;
+  }
+
   const btn = document.getElementById('buy-btn');
   const btnText = document.getElementById('buy-btn-text');
-  if (price > 0 && _buyQty >= QTY_MIN) {
+  if (price > 0 && _buyQty >= QTY_MIN && overBudget) {
+    btnText.textContent = '시드 한도 초과';
+    btn.disabled = true;
+  } else if (price > 0 && _buyQty >= QTY_MIN) {
     btnText.textContent = '구매하기';
     btn.disabled = false;
   } else if (price > 0) {
@@ -2681,6 +2785,11 @@ function validateBuy() {
   }
   if (_buyQty < QTY_MIN || _buyQty > QTY_MAX) {
     setQtyError(`수량은 ${QTY_MIN}~${QTY_MAX}주 사이여야 해요`);
+    return false;
+  }
+  const cost = toKrwCost(recommendation.price, _buyQty, recommendation.currency || 'KRW');
+  const available = getAvailableKrw();
+  if (cost > available) {
     return false;
   }
   setQtyError('');
@@ -2926,6 +3035,7 @@ function saveInvestment(record) {
     all.push({ status: 'holding', ...record });
     const trimmed = all.slice(-HISTORY_LIMIT);
     localStorage.setItem(HISTORY_KEY, JSON.stringify(trimmed));
+    updateGlobalSeed();
   } catch (e) {}
 }
 
@@ -2936,12 +3046,14 @@ function updateInvestment(id, updates) {
     if (idx < 0) return;
     all[idx] = { ...all[idx], ...updates };
     localStorage.setItem(HISTORY_KEY, JSON.stringify(all));
+    updateGlobalSeed();
   } catch (e) {}
 }
 
 function clearHistory() {
   if (!confirm('투자 기록을 모두 삭제할까요?')) return;
   try { localStorage.removeItem(HISTORY_KEY); } catch (e) {}
+  updateGlobalSeed();
   renderHistory();
 }
 
@@ -3373,7 +3485,9 @@ function startApp() {
   try { localStorage.setItem(INTRO_SEEN_KEY, '1'); } catch (e) {}
   document.getElementById('screen-intro').style.display = 'none';
   document.getElementById('app-card').style.display = '';
+  document.getElementById('global-seed').style.display = '';
   renderOnboarding();
+  updateGlobalSeed();
   showScreen('screen-onboarding', 1);
   window.scrollTo(0, 0);
 }
@@ -3386,7 +3500,9 @@ if (_introSeen) {
   // 재방문 — 오프닝 건너뛰고 바로 온보딩
   document.getElementById('screen-intro').style.display = 'none';
   document.getElementById('app-card').style.display = '';
+  document.getElementById('global-seed').style.display = '';
   renderOnboarding();
+  updateGlobalSeed();
   showScreen('screen-onboarding', 1);
 }
 // 첫 방문이면 screen-intro가 기본 노출, app-card는 숨김 상태 유지
