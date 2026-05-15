@@ -1315,18 +1315,20 @@
   .fb-capture .fb-section-title { margin-top: 28px; }
   .fb-capture.capturing { padding: 24px; }
   .fb-capture-foot {
+    display: none;
     margin-top: 16px;
     font-size: 12px;
     color: var(--text-tertiary);
     letter-spacing: -0.025em;
   }
+  .fb-capture.capturing .fb-capture-foot { display: block; }
   .fb-actions {
     margin-top: 24px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 10px;
   }
-  .fb-actions .fb-copy-bar { margin-top: 0; }
+  .fb-actions .fb-copy-bar { margin-top: 0; flex: 1; min-width: 0; }
 
   /* Investment history */
   .history-list {
@@ -2753,7 +2755,7 @@ function showFeedback(lines) {
   document.getElementById('fb-result').innerHTML = `
     <div class="fb-section-title">투자 가이드</div>
     <div class="fb-cards">${cardsHtml}</div>
-    <div class="fb-capture-foot">${stockName ? escapeHtml(stockName) + ' · ' : ''}bedit 가상 투자 연습</div>
+    <div class="fb-capture-foot">${stockName ? escapeHtml(stockName) + ' · ' : ''}bidit 가상 투자 연습</div>
   `;
   document.getElementById('fb-actions').style.display = '';
 
@@ -3237,7 +3239,7 @@ function renderSellFeedback(lines) {
   document.getElementById('sfb-result').innerHTML = `
     <div class="fb-section-title">판매 가이드</div>
     <div class="fb-cards">${cardsHtml}</div>
-    <div class="fb-capture-foot">${r && r.name ? escapeHtml(r.name) + ' · ' : ''}bedit 가상 투자 연습</div>
+    <div class="fb-capture-foot">${r && r.name ? escapeHtml(r.name) + ' · ' : ''}bidit 가상 투자 연습</div>
   `;
   document.getElementById('sfb-actions').style.display = '';
 }
@@ -3291,7 +3293,7 @@ async function saveFeedbackCard(kind) {
       : ((recommendation && recommendation.name) || '구매');
     const label = kind === 'sell' ? '판매가이드' : '투자가이드';
     const link = document.createElement('a');
-    link.download = `bedit_${name}_${label}.png`;
+    link.download = `bidit_${name}_${label}.png`;
     link.href = canvas.toDataURL('image/png');
     link.click();
     if (btn) {
