@@ -12,9 +12,20 @@ const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || "http://localhost:3000,h
   .map((s) => s.trim())
   .filter(Boolean);
 
+function isOriginAllowed(origin) {
+  if (!origin) return true; // same-origin or non-browser
+  if (ALLOWED_ORIGINS.includes(origin)) return true;
+  // dev 편의: 로컬 호스트 변종(다른 포트, 0.0.0.0, [::1] 등) 허용
+  try {
+    const u = new URL(origin);
+    if (["localhost", "127.0.0.1", "0.0.0.0", "[::1]"].includes(u.hostname)) return true;
+  } catch (e) {}
+  return false;
+}
+
 function applyCors(req, res) {
   const origin = req.headers.origin;
-  if (origin && ALLOWED_ORIGINS.includes(origin)) {
+  if (origin && isOriginAllowed(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
     res.setHeader("Vary", "Origin");
   }
@@ -85,9 +96,10 @@ const server = http.createServer(async (req, res) => {
   // 도구 호출 가능한 Claude 프록시
   if (req.method === "POST" && req.url === "/api/chat") {
     const origin = req.headers.origin;
-    if (origin && !ALLOWED_ORIGINS.includes(origin)) {
+    if (!isOriginAllowed(origin)) {
+      console.warn("[origin_not_allowed]", origin);
       res.writeHead(403, { "Content-Type": "application/json" });
-      return res.end(JSON.stringify({ error: "origin_not_allowed" }));
+      return res.end(JSON.stringify({ error: "origin_not_allowed", origin: origin || null }));
     }
 
     const ip = getClientIp(req);
